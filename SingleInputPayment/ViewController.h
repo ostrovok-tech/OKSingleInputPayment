@@ -7,7 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "OKSingeInputPaymentField.h"
+#import "OKSingleInputPayment.h"
 
-@interface ViewController : UIViewController
+@interface ViewController : UIViewController <OKSingleInputPaymentDelegate>
+
+@property (weak, nonatomic) IBOutlet OKSingeInputPaymentField *singlePaymentField;
+@property (weak, nonatomic) IBOutlet OKSingleInputPayment *singlePayment;
 
 @end

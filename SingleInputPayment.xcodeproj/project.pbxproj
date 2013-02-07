@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		941CB82716C28E1900F258FE /* OKSingleInputPayment.m in Sources */ = {isa = PBXBuildFile; fileRef = 941CB82616C28E1900F258FE /* OKSingleInputPayment.m */; };
+		941CB82B16C3BAE800F258FE /* CreditCardValidation.m in Sources */ = {isa = PBXBuildFile; fileRef = 941CB82A16C3BAE800F258FE /* CreditCardValidation.m */; };
 		946DDCBA16BBFA4400EFDBCF /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 946DDCB916BBFA4400EFDBCF /* UIKit.framework */; };
 		946DDCBC16BBFA4400EFDBCF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 946DDCBB16BBFA4400EFDBCF /* Foundation.framework */; };
 		946DDCBE16BBFA4400EFDBCF /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 946DDCBD16BBFA4400EFDBCF /* CoreGraphics.framework */; };
@@ -50,6 +51,8 @@
 /* Begin PBXFileReference section */
 		941CB82516C28E1900F258FE /* OKSingleInputPayment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKSingleInputPayment.h; sourceTree = "<group>"; };
 		941CB82616C28E1900F258FE /* OKSingleInputPayment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKSingleInputPayment.m; sourceTree = "<group>"; };
+		941CB82916C3BAE800F258FE /* CreditCardValidation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreditCardValidation.h; sourceTree = "<group>"; };
+		941CB82A16C3BAE800F258FE /* CreditCardValidation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CreditCardValidation.m; sourceTree = "<group>"; };
 		946DDCB616BBFA4400EFDBCF /* SingleInputPayment.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SingleInputPayment.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		946DDCB916BBFA4400EFDBCF /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		946DDCBB16BBFA4400EFDBCF /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -109,6 +112,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		941CB82816C3BAA500F258FE /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				941CB82516C28E1900F258FE /* OKSingleInputPayment.h */,
+				941CB82616C28E1900F258FE /* OKSingleInputPayment.m */,
+				941CB82916C3BAE800F258FE /* CreditCardValidation.h */,
+				941CB82A16C3BAE800F258FE /* CreditCardValidation.m */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
 		946DDCAD16BBFA4400EFDBCF = {
 			isa = PBXGroup;
 			children = (
@@ -142,6 +156,7 @@
 		946DDCBF16BBFA4400EFDBCF /* SingleInputPayment */ = {
 			isa = PBXGroup;
 			children = (
+				941CB82816C3BAA500F258FE /* Source */,
 				946DDD0D16C1486F00EFDBCF /* Assets */,
 				946DDCC816BBFA4400EFDBCF /* AppDelegate.h */,
 				946DDCC916BBFA4400EFDBCF /* AppDelegate.m */,
@@ -149,8 +164,6 @@
 				946DDCD416BBFA4400EFDBCF /* ViewController.h */,
 				946DDCD516BBFA4400EFDBCF /* ViewController.m */,
 				946DDCC016BBFA4400EFDBCF /* Supporting Files */,
-				941CB82516C28E1900F258FE /* OKSingleInputPayment.h */,
-				941CB82616C28E1900F258FE /* OKSingleInputPayment.m */,
 			);
 			path = SingleInputPayment;
 			sourceTree = "<group>";
@@ -331,6 +344,7 @@
 				946DDCCA16BBFA4400EFDBCF /* AppDelegate.m in Sources */,
 				946DDCD616BBFA4400EFDBCF /* ViewController.m in Sources */,
 				941CB82716C28E1900F258FE /* OKSingleInputPayment.m in Sources */,
+				941CB82B16C3BAE800F258FE /* CreditCardValidation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

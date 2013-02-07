@@ -7,6 +7,7 @@
 //
 
 #import "OKSingleInputPayment.h"
+#import "CreditCardValidation.h"
 
 @interface OKSingleInputPayment()
 @property (strong, nonatomic) UITextField *cardNumberTextField;
@@ -258,43 +259,24 @@
         [self resetFieldState];
     }
     self.trimmedNumber = [self.cardNumberTextField.text stringByReplacingOccurrencesOfString:@" " withString:@""];
-    if (self.trimmedNumber.length == 16) {
-        NSLog(@"validate card. Number: %@", self.trimmedNumber);
-        [self validateCardNumber];
-    }
-}
-
-- (void)textFieldChanged {
-    NSLog(@"value changed");
     
-    if (self.paymentStep == OKPaymentStepCCNumber) {
-        if (self.ccNumberInvalid) {
-            [self resetFieldState];
-        }
-        self.trimmedNumber = [self.cardNumberTextField.text stringByReplacingOccurrencesOfString:@" " withString:@""];
-        
+    if ([CreditCardValidation validateCard:self.trimmedNumber]) {
+        NSLog(@"card is valid!!!");
+    }
+    
+    if (self.cardType == OKCArdTypeMastercard) {
         if (self.trimmedNumber.length == 16) {
-            NSLog(@"validate card. Number: %@", self.trimmedNumber);
+            [self validateCardNumber];
+        }
+    } else if (self.cardType == OKCardTypeVisa) {
+        if ((self.trimmedNumber.length > 12 && self.trimmedNumber.length < 20)) {
             [self validateCardNumber];
         }
     }
-//    } else if (self.paymentStep == OKPaymentStepExpiration) {
-//        self.expirationLabel.hidden = YES;
-//        if (self.text.length == 5) {
-//            NSArray *expirationParts = [self.text componentsSeparatedByString:@"/"];
-//            self.cardMonth = expirationParts[0];
-//            self.cardYear = expirationParts[1];
-//            [self validateExpiration];
-//        }
-//    } else if (self.paymentStep == OKPaymentStepSecurityCode) {
-//        self.cvcLabel.hidden = YES;
-//        if (self.text.length == 3) {
-//            self.cardCvc = self.text;
-//            [self validateCvc];
-//        }
-//    }
     
 }
+
+
 
 #pragma mark - Validation methods
 - (void)validateCardNumber {
@@ -302,6 +284,18 @@
         NSLog(@"Invalid card type");
         [self invalidFieldState];
         return;
+    }else if ( self.cardType == OKCardTypeVisa) {
+        if (self.trimmedNumber.length == 16 && ![CreditCardValidation validateCard:self.trimmedNumber]) {
+            [self invalidFieldState];
+            return;
+        } else if (![CreditCardValidation validateCard:self.trimmedNumber]) {
+            return;
+        }
+    }else if (self.cardType == OKCArdTypeMastercard) {
+        if (![CreditCardValidation validateCard:self.trimmedNumber]) {
+            [self invalidFieldState];
+            return;
+        }
     }
     
     self.cardNumber = self.trimmedNumber;

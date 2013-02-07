@@ -17,7 +17,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [self.singlePaymentField setFrame:CGRectMake(self.singlePaymentField.frame.origin.x, self.singlePaymentField.frame.origin.y, self.singlePaymentField.frame.size.width, 80)];
 	// Do any additional setup after loading the view, typically from a nib.
 }
 

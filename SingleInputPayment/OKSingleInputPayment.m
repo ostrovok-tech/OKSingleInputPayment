@@ -89,6 +89,8 @@
     self.lastFourLabel = [[UILabel alloc] initWithFrame:CGRectMake((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
     self.lastFourLabel.backgroundColor = [UIColor greenColor];
     self.lastFourLabel.hidden = YES;
+    self.lastFourLabel.font = self.textFieldFont;
+    self.lastFourLabel.adjustsFontSizeToFitWidth = YES;
     [self addSubview:self.lastFourLabel];
     
     self.expirationTextField = [[UITextField alloc] initWithFrame:CGRectMake((self.lastFourLabel.frame.origin.x + self.lastFourLabel.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
@@ -98,6 +100,9 @@
     self.expirationTextField.adjustsFontSizeToFitWidth = YES;
     self.expirationTextField.delegate = self;
     self.expirationTextField.hidden = YES;
+    self.expirationTextField.inputAccessoryView = self.accessoryToolBar;
+    [self.expirationTextField addTarget:self action:@selector(expirationTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
+
     [self addSubview:self.expirationTextField];
     
     
@@ -108,6 +113,7 @@
     self.cvcTextField.adjustsFontSizeToFitWidth = YES;
     self.cvcTextField.delegate = self;
     self.cvcTextField.hidden = YES;
+    self.cvcTextField.inputAccessoryView = self.accessoryToolBar;
     [self addSubview:self.cvcTextField];
     
     self.zipTextField = [[UITextField alloc] initWithFrame:CGRectMake(self.cvcTextField.frame.origin.x + self.cvcTextField.frame.size.width + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
@@ -117,6 +123,7 @@
     self.zipTextField.font = self.textFieldFont;
     self.zipTextField.delegate = self;
     self.zipTextField.hidden = YES;
+    self.zipTextField.inputAccessoryView = self.accessoryToolBar;
     [self addSubview:self.zipTextField];
 }
 
@@ -125,6 +132,7 @@
     self.includeZipCode = YES;
     self.paymentStep = OKPaymentStepCCNumber;
     self.displayingCardType = OKCardTypeUnknown;
+    self.cardType = OKCardTypeUnknown;
     self.expirationPlaceholder = @"mm/yy";
     self.cvcPlaceholder = @"cvc";
     self.numberPlaceholder = @"4111 1111 1111 1111";
@@ -138,7 +146,7 @@
     if (self.includeZipCode)
         self.zipTextField.hidden = NO;
     
-    self.lastFourLabel.text = [NSString stringWithFormat:@"%@/%@", self.cardMonth, self.cardYear];
+    self.lastFourLabel.text = self.lastFour;
 }
 
 - (IBAction)next:(id)sender {
@@ -175,29 +183,33 @@
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
     if (textField == self.cvcTextField) {
-        [self setCvcCard];
+        [self animateLeftView:OKCardTypeCvc];
+    } else {
+        [self animateLeftView:self.cardType];
     }
     self.activeTextField = textField;
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
     NSLog(@"Text: %@, replacementString: %@, Length of text %d", textField.text, string, textField.text.length);
-    
     if ([string isEqualToString:@" "])
         return NO;
     
-    if (self.paymentStep == OKPaymentStepCCNumber) {
+    if (self.activeTextField == self.cardNumberTextField) {
         if (textField.text.length == 0) {
             NSLog(@"first number entered");
             if ([string isEqualToString:@"4"]) {
                 NSLog(@"IT'S A VISA");
-                [self setVisaCard];
+                [self animateLeftView:OKCardTypeVisa];
+                self.cardType = OKCardTypeVisa;
             } else if ([string isEqualToString:@"5"]) {
                 NSLog(@"IT'S A MASTERCARD");
-                [self setMasterCard];
+                [self animateLeftView:OKCArdTypeMastercard];
+                self.cardType = OKCArdTypeMastercard;
             } else {
                 NSLog(@"IT'S UNKNOWN");
-                [self setUnkownCard];
+                [self animateLeftView:OKCardTypeUnknown];
+                self.cardType = OKCardTypeUnknown;
             }
         }
         
@@ -207,24 +219,38 @@
         } else if (textField.text.length == 19 && ![string isEqualToString:@""]) {
             return NO;
         }
-    } else if (self.paymentStep == OKPaymentStepExpiration) {
-//        if ([string isEqualToString:@"/"]) {
-//            if (textField.text.length == 1) {
-//                self.text = [@"0" stringByAppendingFormat:@"%@/", self.text];
-//                return NO;
-//            } else {
-//                
-//            }
-//        } else if (textField.text.length == 1 && ![string isEqualToString:@""]) {
-//            self.text = [self.text stringByAppendingFormat:@"%@/", string];
-//            return NO;
-//        }
-        
-        
+    } else if (self.activeTextField == self.expirationTextField) {
+        if (textField.text.length == 5) {
+            return NO;
+        }
+        if ([string integerValue] < 10 && textField.text.length == 0 && ![string isEqualToString:@"0"]) {
+            textField.text = [@"0" stringByAppendingFormat:@"%@/", string];
+            return NO;
+        }
+        if ([string isEqualToString:@"/"]) {
+            if (textField.text.length == 1) {
+                textField.text = [@"0" stringByAppendingFormat:@"%@/", textField.text];
+                return NO;
+            } else {
+                
+            }
+        } else if (textField.text.length == 1 && ![string isEqualToString:@""]) {
+            textField.text = [textField.text stringByAppendingFormat:@"%@/", string];
+            return NO;
+        }
     }
     
-    
     return YES;
+}
+
+- (void)expirationTextFieldValueChanged {
+    if (self.expirationTextField.text.length == 5) {
+        NSArray *expirationParts = [self.expirationTextField.text componentsSeparatedByString:@"/"];
+        self.cardMonth = expirationParts[0];
+        self.cardYear = expirationParts[1];
+        [self validateExpiration];
+    }
+
 }
 
 - (void)cardNumberTextFieldValueChanged {
@@ -282,58 +308,43 @@
     self.lastFour = [self.cardNumber substringFromIndex: [self.cardNumber length] - 4];
     [self next:self];
 }
+
+- (void)validateExpiration {
+    [self next:self];
+}
     
 #pragma mark - Set card types
-- (void)setCvcCard {
-    if (self.displayingCardType == OKCardTypeCvc)
-        return;
-    self.displayingCardType = OKCardTypeCvc;
-    [UIView transitionWithView:self.leftCardView duration:1.0 options:UIViewAnimationOptionTransitionFlipFromLeft animations:^{
-        self.leftCardView.image = [UIImage imageNamed:@"cvc_icon"];
-    } completion:^(BOOL finished) {
-        //self.leftView = visaView;
-    }];
-    
+
+- (void)animateLeftView:(OKCardType)cardType {
+    if (self.displayingCardType != cardType) {
+        self.displayingCardType = cardType;
+        [UIView transitionWithView:self.leftCardView duration:1.0 options:UIViewAnimationOptionTransitionFlipFromLeft  animations:^{
+            self.leftCardView.image = [self imageForCardType:cardType];
+        } completion:^(BOOL finished) {
+            //self.leftView = visaView;
+        }];
+    }
 }
 
-- (void)setUnkownCard {
-    if (self.displayingCardType == OKCardTypeUnknown)
-        return;
-    self.cardType = self.displayingCardType = OKCardTypeUnknown;
-    
-    [UIView transitionWithView:self.leftCardView duration:1.0 options:UIViewAnimationOptionTransitionFlipFromLeft animations:^{
-        self.leftCardView.image = [UIImage imageNamed:@"credit_card_icon"];
-    } completion:^(BOOL finished) {
-        //self.leftView = visaView;
-    }];
-}
-- (void)setMasterCard {
-    if (self.displayingCardType == OKCArdTypeMastercard)
-        return;
-    //self.leftView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"mastercard_icon" ]];
-    self.cardType = self.displayingCardType = OKCArdTypeMastercard;
-    
-    [UIView transitionWithView:self.leftCardView duration:1.0 options:UIViewAnimationOptionTransitionFlipFromLeft animations:^{
-        //((UIImageView *)self.leftView).image = [UIImage imageNamed:@"mastercard_icon"];
-        self.leftCardView.image = [UIImage imageNamed:@"mastercard_icon"];
-        
-    } completion:^(BOOL finished) {
-        //self.leftView = visaView;
-    }];
-    
-}
-
-- (void)setVisaCard {
-    if (self.displayingCardType == OKCardTypeVisa)
-        return;
-    
-    self.cardType = self.displayingCardType = OKCardTypeVisa;
-    
-    [UIView transitionWithView:self.leftCardView duration:1.0 options:UIViewAnimationOptionTransitionFlipFromLeft  animations:^{
-        self.leftCardView.image = [UIImage imageNamed:@"visa_icon"];
-    } completion:^(BOOL finished) {
-        //self.leftView = visaView;
-    }];
+- (UIImage *)imageForCardType:(OKCardType)cardType {
+    UIImage *image;
+    switch (cardType) {
+        case OKCardTypeVisa:
+            image = [UIImage imageNamed:@"visa_icon"];
+            break;
+        case OKCArdTypeMastercard:
+            image = [UIImage imageNamed:@"mastercard_icon"];
+            break;
+        case OKCardTypeUnknown:
+            image = [UIImage imageNamed:@"credit_card_icon"];
+            break;
+        case OKCardTypeCvc:
+            image = [UIImage imageNamed:@"cvc_icon"];
+            break;
+        default:
+            break;
+    }
+    return image;
 }
 
 

@@ -7,7 +7,22 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "OKSingeInputPaymentField.h"
+
+typedef enum {
+    OKPaymentStepCCNumber,
+    OKPaymentStepExpiration,
+    OKPaymentStepSecurityCode,
+    OKPaymentStepSecurityZip
+} OKPaymentStep;
+
+typedef enum {
+    OKCardTypeVisa,
+    OKCArdTypeMastercard,
+    OKCardTypeUnknown,
+    OKCardTypeCvc
+} OKCardType;
+
+
 @interface OKSingleInputPayment : UIView <UITextFieldDelegate>
 @property (strong, nonatomic) UIFont *textFieldFont;
 @property (strong, nonatomic) NSString *cardNumber;

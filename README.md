@@ -15,12 +15,7 @@ inputField.textFieldFont = [UIFont fontWithName:@"Helvetica" size:28];
 ```objective-c
 @property (strong, nonatomic) UIFont *defaultFont;
 @property (strong, nonatomic) UIColor *defaultFontColor;
-@property (strong, readonly) NSString *cardNumber;
-@property (strong, readonly) NSString *cardCvc;
-@property (strong, readonly) NSString *cardMonth;
-@property (strong, readonly) NSString *cardYear;
-@property (readonly) OKCardType cardType;
-
+@property (strong, nonatomic) UIFont *placeholderFont;
 @property BOOL includeZipCode;
 @property (strong, nonatomic) NSString *cvcPlaceholder;
 @property (strong, nonatomic) NSString *zipPlaceholder;
@@ -28,7 +23,4 @@ inputField.textFieldFont = [UIFont fontWithName:@"Helvetica" size:28];
 @property (strong, nonatomic) NSString *monthYearSeparator;
 @property (strong, nonatomic) NSString *monthPlaceholder;
 @property (strong, nonatomic) NSString *yearPlaceholder;
-
-@property (strong, nonatomic) UIFont *placeholderFont;
-
 ```

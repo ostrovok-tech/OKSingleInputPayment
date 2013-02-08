@@ -9,12 +9,18 @@
 #import "OKSingleInputPayment.h"
 #import "CreditCardValidation.h"
 
-@interface OKSingleInputPayment()
+@interface OKSingleInputPayment() {
+    CGFloat maximumFontForCardNumber;
+    CGFloat maximumFontForFields;
+
+}
 @property (strong, nonatomic) UITextField *cardNumberTextField;
 @property (strong, nonatomic) UITextField *expirationTextField;
 @property (strong, nonatomic) UITextField *cvcTextField;
 @property (strong, nonatomic) UITextField *zipTextField;
 @property (strong, nonatomic) UILabel *lastFourLabel;
+
+
 
 @property (strong, nonatomic) NSString *trimmedNumber;
 @property (strong, nonatomic) NSString *lastFour;
@@ -89,9 +95,7 @@
     [formatter setDateFormat:@"yy"];
     self.minYear = [[formatter stringFromDate:date] integerValue];
     self.maxYear = [[formatter stringFromDate:future] integerValue];
-    //slelf.currentYear =
-    //self.currentYear = [[yearString substringFromIndex: [yearString length] - 2] integerValue];
-    
+       
     UIImage *background = [[UIImage imageNamed:@"field_cell"] resizableImageWithCapInsets:(UIEdgeInsetsMake(10.0, 10.0, 10.0, 10.0))];
     UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.bounds];
     imageView.image = background;
@@ -105,15 +109,16 @@
     
     int padding = 5;
     self.cardNumberTextField = [[UITextField alloc] initWithFrame:CGRectMake((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding, (self.frame.size.height / 2) - ((self.frame.size.height * 0.9) /2), self.frame.size.width - ((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding) - 5, self.frame.size.height * 0.9)];
+    [self.numberPlaceholder sizeWithFont:self.defaultFont minFontSize:self.cardNumberTextField.minimumFontSize actualFontSize:&maximumFontForCardNumber forWidth:self.cardNumberTextField.frame.size.width lineBreakMode:NSLineBreakByClipping];
+
     self.cardNumberTextField.backgroundColor = [UIColor yellowColor];
-    self.cardNumberTextField.font = self.defaultFont;
+    self.cardNumberTextField.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForCardNumber];
     self.cardNumberTextField.delegate = self;
     self.cardNumberTextField.adjustsFontSizeToFitWidth = YES;
     self.cardNumberTextField.keyboardType = UIKeyboardTypeNumberPad;
     self.cardNumberTextField.inputAccessoryView = self.accessoryToolBar;
     [self.cardNumberTextField addTarget:self action:@selector(cardNumberTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
     self.cardNumberTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-    //self.cardNumberTextField.text si
     
     [self addSubview:self.cardNumberTextField];
     [self addSubview:self.leftCardView];
@@ -121,11 +126,11 @@
     float availSpace = self.frame.size.width - ((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + (padding * 4));
     float widthPerField = availSpace / 4;
     
-    //CGSize expextedLabelSize = [@"2384" sizeWithFont:self.textFieldFont];
+    [@"12345" sizeWithFont:self.defaultFont minFontSize:self.cardNumberTextField.minimumFontSize actualFontSize:&maximumFontForFields forWidth:widthPerField lineBreakMode:NSLineBreakByClipping];
     self.lastFourLabel = [[UILabel alloc] initWithFrame:CGRectMake((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
     self.lastFourLabel.backgroundColor = [UIColor greenColor];
     self.lastFourLabel.hidden = YES;
-    self.lastFourLabel.font = self.defaultFont;
+    self.lastFourLabel.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForFields];
     self.lastFourLabel.adjustsFontSizeToFitWidth = YES;
     UITapGestureRecognizer *tg = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(previous:)];
     [self.lastFourLabel addGestureRecognizer:tg];
@@ -134,12 +139,13 @@
     
     self.expirationTextField = [[UITextField alloc] initWithFrame:CGRectMake((self.lastFourLabel.frame.origin.x + self.lastFourLabel.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
     self.expirationTextField.backgroundColor = [UIColor greenColor];
-    self.expirationTextField.font = self.defaultFont;
+    self.expirationTextField.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForFields];
     self.expirationTextField.adjustsFontSizeToFitWidth = YES;
     self.expirationTextField.delegate = self;
     self.expirationTextField.hidden = YES;
     self.expirationTextField.inputAccessoryView = self.accessoryToolBar;
     self.expirationTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    self.expirationTextField.keyboardType = UIKeyboardTypeNumberPad;
     [self.expirationTextField addTarget:self action:@selector(expirationTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
     
     [self addSubview:self.expirationTextField];
@@ -147,12 +153,13 @@
     
     self.cvcTextField = [[UITextField alloc] initWithFrame:CGRectMake(self.expirationTextField.frame.origin.x + self.expirationTextField.frame.size.width + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
     self.cvcTextField.backgroundColor = [UIColor greenColor];
-    self.cvcTextField.font = self.defaultFont;
+    self.cvcTextField.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForFields];
     self.cvcTextField.adjustsFontSizeToFitWidth = YES;
     self.cvcTextField.delegate = self;
     self.cvcTextField.hidden = YES;
     self.cvcTextField.inputAccessoryView = self.accessoryToolBar;
     self.cvcTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    self.cvcTextField.keyboardType = UIKeyboardTypeNumberPad;
     [self.cvcTextField addTarget:self action:@selector(cvcTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
     
     [self addSubview:self.cvcTextField];
@@ -160,11 +167,12 @@
     self.zipTextField = [[UITextField alloc] initWithFrame:CGRectMake(self.cvcTextField.frame.origin.x + self.cvcTextField.frame.size.width + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
     self.zipTextField.backgroundColor = [UIColor greenColor];
     self.zipTextField.adjustsFontSizeToFitWidth = YES;
-    self.zipTextField.font = self.defaultFont;
+    self.zipTextField.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForFields];
     self.zipTextField.delegate = self;
     self.zipTextField.hidden = YES;
     self.zipTextField.inputAccessoryView = self.accessoryToolBar;
     self.zipTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    self.zipTextField.keyboardType = UIKeyboardTypeNumberPad;
     [self addSubview:self.zipTextField];
 
 }
@@ -261,6 +269,11 @@
     self.accessoryToolBar.items = @[flexibleSpace, previousButton, nextButton];
 }
 
+- (UIFont *)fontWithNewSize:(UIFont *)font newSize:(CGFloat)pointSize {
+    NSString *fontName = font.fontName;
+    UIFont *newFont = [UIFont fontWithName:fontName size:pointSize];
+    return newFont;
+}
 
 #pragma mark - UITextFieldDelegate methods
 

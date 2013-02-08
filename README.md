@@ -1,7 +1,7 @@
 single-input-payment
 ====================
 
-A implementation of Square's single input payment for iOS
+An implementation of Square's single input payment for iOS
 
 
 ## Usage

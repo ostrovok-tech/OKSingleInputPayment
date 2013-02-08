@@ -34,8 +34,15 @@ typedef enum {
 @property (strong, readonly) NSString *cardZip;
 
 @property (readonly) OKCardType cardType;
-
+/**
+  Optionally include the zipcode field. This is an optional field as not all locales support this field..
+ */
 @property BOOL includeZipCode;
+/**
+ Optionally use an inputaccessory view with previous<->next
+ */
+@property BOOL useInputAccessory;
+
 @property (strong, nonatomic) NSString *cvcPlaceholder;
 @property (strong, nonatomic) NSString *zipPlaceholder;
 @property (strong, nonatomic) NSString *numberPlaceholder;

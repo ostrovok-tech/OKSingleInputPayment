@@ -50,7 +50,16 @@ Drag a UIView into your scene and add the custom class OKSingleInputPayment, wir
 @property (strong, nonatomic) NSString *yearPlaceholder;
 ```
 
-## Optional delegate methods 
+## Readable properties
+```objective-c
+@property (strong, readonly) NSString *cardNumber;
+@property (strong, readonly) NSString *cardCvc;
+@property (strong, readonly) NSString *cardMonth;
+@property (strong, readonly) NSString *cardYear;
+@property (readonly) OKCardType cardType;
+```
+
+## Optional <OKSingleInputPaymentDelegate> delegate methods 
 ```objective-c
 - (void)paymentDetailsValid;
 - (void)didChangePaymentStep:(OKPaymentStep)paymentStep;

@@ -479,6 +479,7 @@
 
 - (void)resetFieldState {
     self.containerView.image = [[UIImage imageNamed:@"field_cell"] resizableImageWithCapInsets:(UIEdgeInsetsMake(10.0, 10.0, 10.0, 10.0))];
+    self.activeTextField.textColor = self.defaultFontColor;
     self.ccNumberInvalid = NO;
 }
 

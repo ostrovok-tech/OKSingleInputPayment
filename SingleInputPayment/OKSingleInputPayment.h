@@ -27,11 +27,13 @@ typedef enum {
 @interface OKSingleInputPayment : UIView <UITextFieldDelegate>
 @property (strong, nonatomic) UIFont *defaultFont;
 @property (strong, nonatomic) UIColor *defaultFontColor;
-@property (strong, nonatomic) NSString *cardNumber;
-@property (strong, nonatomic) NSString *cardCvc;
-@property (strong, nonatomic) NSString *cardMonth;
-@property (strong, nonatomic) NSString *cardYear;
-@property OKCardType cardType;
+@property (strong, readonly) NSString *cardNumber;
+@property (strong, readonly) NSString *cardCvc;
+@property (strong, readonly) NSString *cardMonth;
+@property (strong, readonly) NSString *cardYear;
+@property (strong, readonly) NSString *cardZip;
+
+@property (readonly) OKCardType cardType;
 
 @property BOOL includeZipCode;
 @property (strong, nonatomic) NSString *cvcPlaceholder;

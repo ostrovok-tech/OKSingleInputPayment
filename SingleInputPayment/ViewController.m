@@ -20,6 +20,10 @@
 	// Do any additional setup after loading the view, typically from a nib.
     self.singlePayment.monthPlaceholder = @"мм";
     self.singlePayment.yearPlaceholder = @"гг";
+    
+    OKSingleInputPayment *inputField = [[OKSingleInputPayment alloc] initWithFrame:CGRectMake(20, 120, 280, 50)];
+    [self.view addSubview:inputField];
+
 }
 
 - (void)didReceiveMemoryWarning

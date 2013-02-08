@@ -18,7 +18,8 @@
 
 @property (strong, nonatomic) NSString *trimmedNumber;
 @property (strong, nonatomic) NSString *lastFour;
-
+@property NSInteger minYear;
+@property NSInteger maxYear;
 
 @property (strong, nonatomic) UIImageView *containerView;
 @property (strong, nonatomic) UIImageView *leftCardView;
@@ -57,14 +58,47 @@
     return self;
 }
 
-- (void)awakeFromNib  {
+
+- (void)commonInit:(CGRect)frame {
+    self.defaultFont = [UIFont fontWithName:@"Helvetica" size:28];
+    self.defaultFontColor = [UIColor blackColor];
+    
+    self.includeZipCode = YES;
+    self.paymentStep = OKPaymentStepCCNumber;
+    self.displayingCardType = OKCardTypeUnknown;
+    _cardType = OKCardTypeUnknown;
+    self.monthPlaceholder = @"mm";
+    self.yearPlaceholder = @"yy";
+    self.monthYearSeparator = @"/";
+    self.cvcPlaceholder = @"cvc";
+    self.zipPlaceholder = @"55128";
+    self.numberPlaceholder = @"4111 1111 1111 1111";
+    self.accessoryToolBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, 44)];
+    [self setupAccessoryToolbar];
+    [self updatePlaceholders];
+    
+    
+    NSDateComponents *yearComponent = [[NSDateComponents alloc] init];
+    yearComponent.year = 20;
+    
+    NSCalendar *theCalendar = [NSCalendar currentCalendar];
+    NSDate *date = [NSDate date];
+    NSDate *future = [theCalendar dateByAddingComponents:yearComponent toDate:[NSDate date] options:0];
+    
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"yy"];
+    self.minYear = [[formatter stringFromDate:date] integerValue];
+    self.maxYear = [[formatter stringFromDate:future] integerValue];
+    //slelf.currentYear =
+    //self.currentYear = [[yearString substringFromIndex: [yearString length] - 2] integerValue];
+    
     UIImage *background = [[UIImage imageNamed:@"field_cell"] resizableImageWithCapInsets:(UIEdgeInsetsMake(10.0, 10.0, 10.0, 10.0))];
     UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.bounds];
     imageView.image = background;
     self.containerView = imageView;
     [self addSubview:self.containerView];
     
-        
+    
     self.leftCardView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"credit_card_icon"]];
     self.leftCardView.backgroundColor = [UIColor blueColor];
     [self.leftCardView setFrame:CGRectMake(10, (self.frame.size.height / 2) - (self.leftCardView.frame.size.height/2), self.leftCardView.frame.size.width, self.leftCardView.frame.size.height)];
@@ -78,12 +112,14 @@
     self.cardNumberTextField.keyboardType = UIKeyboardTypeNumberPad;
     self.cardNumberTextField.inputAccessoryView = self.accessoryToolBar;
     [self.cardNumberTextField addTarget:self action:@selector(cardNumberTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
-
+    self.cardNumberTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    //self.cardNumberTextField.text si
+    
     [self addSubview:self.cardNumberTextField];
     [self addSubview:self.leftCardView];
     
     float availSpace = self.frame.size.width - ((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + (padding * 4));
-    float widthPerField = availSpace / 4; 
+    float widthPerField = availSpace / 4;
     
     //CGSize expextedLabelSize = [@"2384" sizeWithFont:self.textFieldFont];
     self.lastFourLabel = [[UILabel alloc] initWithFrame:CGRectMake((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
@@ -103,8 +139,9 @@
     self.expirationTextField.delegate = self;
     self.expirationTextField.hidden = YES;
     self.expirationTextField.inputAccessoryView = self.accessoryToolBar;
+    self.expirationTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     [self.expirationTextField addTarget:self action:@selector(expirationTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
-
+    
     [self addSubview:self.expirationTextField];
     
     
@@ -115,8 +152,9 @@
     self.cvcTextField.delegate = self;
     self.cvcTextField.hidden = YES;
     self.cvcTextField.inputAccessoryView = self.accessoryToolBar;
+    self.cvcTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     [self.cvcTextField addTarget:self action:@selector(cvcTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
-
+    
     [self addSubview:self.cvcTextField];
     
     self.zipTextField = [[UITextField alloc] initWithFrame:CGRectMake(self.cvcTextField.frame.origin.x + self.cvcTextField.frame.size.width + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
@@ -126,29 +164,12 @@
     self.zipTextField.delegate = self;
     self.zipTextField.hidden = YES;
     self.zipTextField.inputAccessoryView = self.accessoryToolBar;
+    self.zipTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     [self addSubview:self.zipTextField];
+
 }
 
-- (void)commonInit:(CGRect)frame {
-    self.defaultFont = [UIFont fontWithName:@"Helvetica" size:28];
-    self.defaultFontColor = [UIColor blackColor];
-    
-    self.includeZipCode = YES;
-    self.paymentStep = OKPaymentStepCCNumber;
-    self.displayingCardType = OKCardTypeUnknown;
-    self.cardType = OKCardTypeUnknown;
-    self.monthPlaceholder = @"mm";
-    self.yearPlaceholder = @"yy";
-    self.monthYearSeparator = @"/";
-    self.cvcPlaceholder = @"cvc";
-    self.zipPlaceholder = @"55128";
-    self.numberPlaceholder = @"4111 1111 1111 1111";
-    self.accessoryToolBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, 44)];
-    [self setupAccessoryToolbar];
-    [self updatePlaceholders];
-}
-
-
+#pragma mark - Setters for updating placholders when client overrides defaults
 - (void)setYearPlaceholder:(NSString *)yearPlaceholder {
     
     _yearPlaceholder = yearPlaceholder;
@@ -272,19 +293,15 @@
     
     if (self.activeTextField == self.cardNumberTextField) {
         if (textField.text.length == 0) {
-            NSLog(@"first number entered");
             if ([string isEqualToString:@"4"]) {
-                NSLog(@"IT'S A VISA");
                 [self animateLeftView:OKCardTypeVisa];
-                self.cardType = OKCardTypeVisa;
+                _cardType = OKCardTypeVisa;
             } else if ([string isEqualToString:@"5"]) {
-                NSLog(@"IT'S A MASTERCARD");
                 [self animateLeftView:OKCArdTypeMastercard];
-                self.cardType = OKCArdTypeMastercard;
+                _cardType = OKCArdTypeMastercard;
             } else {
-                NSLog(@"IT'S UNKNOWN");
                 [self animateLeftView:OKCardTypeUnknown];
-                self.cardType = OKCardTypeUnknown;
+                _cardType = OKCardTypeUnknown;
             }
         }
         
@@ -295,7 +312,7 @@
             return NO;
         }
     } else if (self.activeTextField == self.expirationTextField) {
-        if (textField.text.length == 5 && ![string isEqualToString:@"0"]) {
+        if (textField.text.length == 5 && ![string isEqualToString:@""]) {
             return NO;
         }
         
@@ -331,33 +348,42 @@
 }
 
 - (void)expirationTextFieldValueChanged {
+    if (self.ccNumberInvalid)
+        [self resetFieldState];
+    
     if (self.expirationTextField.text.length == 5) {
         NSArray *expirationParts = [self.expirationTextField.text componentsSeparatedByString:self.monthYearSeparator];
-        self.cardMonth = expirationParts[0];
-        self.cardYear = expirationParts[1];
-        [self validateExpiration];
+        _cardMonth = expirationParts[0];
+        _cardYear = expirationParts[1];
+        if ([self isValidExpiration]) {
+            [self next:self];
+        }
     }
 
 }
 
 - (void)cvcTextFieldValueChanged {
-    if (self.expirationTextField.text.length > 2) {
-        self.cardCvc = self.cvcTextField.text;
-        [self next:self];
+    if (self.cvcTextField.text.length > 2) {
+        _cardCvc = self.cvcTextField.text;
+        if (self.includeZipCode) {
+            [self next:self];
+
+        } else {
+            
+        }
     }
+}
+
+- (void)zipTextFieldValueChanged {
     
 }
 
-
 - (void)cardNumberTextFieldValueChanged {
-    if (self.ccNumberInvalid) {
+    if (self.ccNumberInvalid) 
         [self resetFieldState];
-    }
-    self.trimmedNumber = [self.cardNumberTextField.text stringByReplacingOccurrencesOfString:@" " withString:@""];
     
-    if ([CreditCardValidation validateCard:self.trimmedNumber]) {
-        NSLog(@"card is valid!!!");
-    }
+    self.trimmedNumber = [self.cardNumberTextField.text stringByReplacingOccurrencesOfString:@" " withString:@""];
+
     
     if (self.cardType == OKCArdTypeMastercard) {
         if (self.trimmedNumber.length == 16 && [self isValidCardNumber]) {
@@ -374,35 +400,50 @@
 }
 
 #pragma mark - Validation methods
+- (BOOL)isFormValid {
+    if ([self isValidExpiration] && [self isValidCardNumber]) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
 - (BOOL)isValidCardNumber {
     if (self.cardType == OKCardTypeUnknown) {
         NSLog(@"Invalid card type");
         [self invalidFieldState];
         return NO;
-    }else if ( self.cardType == OKCardTypeVisa) {
+    } else if ( self.cardType == OKCardTypeVisa) {
         if (self.trimmedNumber.length == 16 && ![CreditCardValidation validateCard:self.trimmedNumber]) {
             [self invalidFieldState];
             return NO;
         } else if (![CreditCardValidation validateCard:self.trimmedNumber]) {
             return NO;
         }
-    }else if (self.cardType == OKCArdTypeMastercard) {
+    } else if (self.cardType == OKCArdTypeMastercard) {
         if (![CreditCardValidation validateCard:self.trimmedNumber]) {
             [self invalidFieldState];
             return NO;
         }
     }
     
-    self.cardNumber = self.trimmedNumber;
+    _cardNumber = self.trimmedNumber;
     self.lastFour = [self.cardNumber substringFromIndex: [self.cardNumber length] - 4];
     return YES;
 }
 
-- (void)validateExpiration {
-    [self next:self];
+- (BOOL)isValidExpiration {
+
+    if ([self.cardMonth integerValue] < 13 && [self.cardMonth integerValue] > 0 && [self.cardYear integerValue] >= self.minYear && [self.cardYear integerValue] <= self.maxYear) {
+        return YES;
+    }
+    [self invalidFieldState];
+    return NO;
 }
     
-#pragma mark - Set card types
+
+
+#pragma mark - Animation methods
 
 - (void)animateLeftView:(OKCardType)cardType {
     if (self.displayingCardType != cardType) {

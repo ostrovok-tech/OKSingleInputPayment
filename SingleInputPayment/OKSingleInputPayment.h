@@ -22,9 +22,11 @@ typedef enum {
     OKCardTypeCvc
 } OKCardType;
 
+@protocol OKSingleInputPaymentDelegate;
 
 @interface OKSingleInputPayment : UIView <UITextFieldDelegate>
-@property (strong, nonatomic) UIFont *textFieldFont;
+@property (strong, nonatomic) UIFont *defaultFont;
+@property (strong, nonatomic) UIColor *defaultFontColor;
 @property (strong, nonatomic) NSString *cardNumber;
 @property (strong, nonatomic) NSString *cardCvc;
 @property (strong, nonatomic) NSString *cardMonth;
@@ -32,12 +34,16 @@ typedef enum {
 @property OKCardType cardType;
 
 @property BOOL includeZipCode;
-@property (strong, nonatomic) NSString *expirationPlaceholder;
 @property (strong, nonatomic) NSString *cvcPlaceholder;
 @property (strong, nonatomic) NSString *zipPlaceholder;
 @property (strong, nonatomic) NSString *numberPlaceholder;
+@property (strong, nonatomic) NSString *monthYearSeparator;
+@property (strong, nonatomic) NSString *monthPlaceholder;
+@property (strong, nonatomic) NSString *yearPlaceholder;
 
 @property (strong, nonatomic) UIFont *placeholderFont;
+
+@property (weak, nonatomic) id <OKSingleInputPaymentDelegate> delegate;
 
 
 @end
@@ -45,5 +51,8 @@ typedef enum {
 
 @protocol OKSingleInputPaymentDelegate <NSObject>
 
+@optional
+- (void)paymentDetailsValid;
+- (void)didChangePaymentStep:(OKPaymentStep)paymentStep;
 
 @end

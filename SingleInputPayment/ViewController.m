@@ -18,6 +18,8 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+    self.singlePayment.monthPlaceholder = @"мм";
+    self.singlePayment.yearPlaceholder = @"гг";
 }
 
 - (void)didReceiveMemoryWarning

@@ -70,13 +70,12 @@
     [self.leftCardView setFrame:CGRectMake(10, (self.frame.size.height / 2) - (self.leftCardView.frame.size.height/2), self.leftCardView.frame.size.width, self.leftCardView.frame.size.height)];
     
     int padding = 5;
-    self.cardNumberTextField = [[UITextField alloc] initWithFrame:CGRectMake((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding, (self.frame.size.height / 2) - ((self.frame.size.height * 0.9) /2), self.frame.size.width - ((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding), self.frame.size.height * 0.9)];
+    self.cardNumberTextField = [[UITextField alloc] initWithFrame:CGRectMake((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding, (self.frame.size.height / 2) - ((self.frame.size.height * 0.9) /2), self.frame.size.width - ((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding) - 5, self.frame.size.height * 0.9)];
     self.cardNumberTextField.backgroundColor = [UIColor yellowColor];
-    self.cardNumberTextField.font = self.textFieldFont;
+    self.cardNumberTextField.font = self.defaultFont;
     self.cardNumberTextField.delegate = self;
     self.cardNumberTextField.adjustsFontSizeToFitWidth = YES;
     self.cardNumberTextField.keyboardType = UIKeyboardTypeNumberPad;
-    self.cardNumberTextField.placeholder = self.numberPlaceholder;
     self.cardNumberTextField.inputAccessoryView = self.accessoryToolBar;
     [self.cardNumberTextField addTarget:self action:@selector(cardNumberTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
 
@@ -90,14 +89,16 @@
     self.lastFourLabel = [[UILabel alloc] initWithFrame:CGRectMake((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
     self.lastFourLabel.backgroundColor = [UIColor greenColor];
     self.lastFourLabel.hidden = YES;
-    self.lastFourLabel.font = self.textFieldFont;
+    self.lastFourLabel.font = self.defaultFont;
     self.lastFourLabel.adjustsFontSizeToFitWidth = YES;
+    UITapGestureRecognizer *tg = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(previous:)];
+    [self.lastFourLabel addGestureRecognizer:tg];
+    self.lastFourLabel.userInteractionEnabled = YES;
     [self addSubview:self.lastFourLabel];
     
     self.expirationTextField = [[UITextField alloc] initWithFrame:CGRectMake((self.lastFourLabel.frame.origin.x + self.lastFourLabel.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
     self.expirationTextField.backgroundColor = [UIColor greenColor];
-    self.expirationTextField.font = self.textFieldFont;
-    self.expirationTextField.placeholder = self.expirationPlaceholder;
+    self.expirationTextField.font = self.defaultFont;
     self.expirationTextField.adjustsFontSizeToFitWidth = YES;
     self.expirationTextField.delegate = self;
     self.expirationTextField.hidden = YES;
@@ -109,19 +110,19 @@
     
     self.cvcTextField = [[UITextField alloc] initWithFrame:CGRectMake(self.expirationTextField.frame.origin.x + self.expirationTextField.frame.size.width + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
     self.cvcTextField.backgroundColor = [UIColor greenColor];
-    self.cvcTextField.placeholder = self.cvcPlaceholder;
-    self.cvcTextField.font = self.textFieldFont;
+    self.cvcTextField.font = self.defaultFont;
     self.cvcTextField.adjustsFontSizeToFitWidth = YES;
     self.cvcTextField.delegate = self;
     self.cvcTextField.hidden = YES;
     self.cvcTextField.inputAccessoryView = self.accessoryToolBar;
+    [self.cvcTextField addTarget:self action:@selector(cvcTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
+
     [self addSubview:self.cvcTextField];
     
     self.zipTextField = [[UITextField alloc] initWithFrame:CGRectMake(self.cvcTextField.frame.origin.x + self.cvcTextField.frame.size.width + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
     self.zipTextField.backgroundColor = [UIColor greenColor];
     self.zipTextField.adjustsFontSizeToFitWidth = YES;
-    self.zipTextField.placeholder = self.zipPlaceholder;
-    self.zipTextField.font = self.textFieldFont;
+    self.zipTextField.font = self.defaultFont;
     self.zipTextField.delegate = self;
     self.zipTextField.hidden = YES;
     self.zipTextField.inputAccessoryView = self.accessoryToolBar;
@@ -129,16 +130,61 @@
 }
 
 - (void)commonInit:(CGRect)frame {
-    self.textFieldFont = [UIFont fontWithName:@"Helvetica" size:28];
+    self.defaultFont = [UIFont fontWithName:@"Helvetica" size:28];
+    self.defaultFontColor = [UIColor blackColor];
+    
     self.includeZipCode = YES;
     self.paymentStep = OKPaymentStepCCNumber;
     self.displayingCardType = OKCardTypeUnknown;
     self.cardType = OKCardTypeUnknown;
-    self.expirationPlaceholder = @"mm/yy";
+    self.monthPlaceholder = @"mm";
+    self.yearPlaceholder = @"yy";
+    self.monthYearSeparator = @"/";
     self.cvcPlaceholder = @"cvc";
+    self.zipPlaceholder = @"55128";
     self.numberPlaceholder = @"4111 1111 1111 1111";
     self.accessoryToolBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, 44)];
     [self setupAccessoryToolbar];
+    [self updatePlaceholders];
+}
+
+
+- (void)setYearPlaceholder:(NSString *)yearPlaceholder {
+    
+    _yearPlaceholder = yearPlaceholder;
+    [self updatePlaceholders];
+}
+
+- (void)setMonthPlaceholder:(NSString *)monthPlaceholder {
+    _monthPlaceholder = monthPlaceholder;
+    [self updatePlaceholders];
+}
+
+- (void)setMonthYearSeparator:(NSString *)monthYearSeparator {
+    _monthYearSeparator = monthYearSeparator;
+    [self updatePlaceholders];
+}
+
+- (void)setZipPlaceholder:(NSString *)zipPlaceholder {
+    _zipPlaceholder = zipPlaceholder;
+    [self updatePlaceholders];
+}
+
+- (void)setNumberPlaceholder:(NSString *)numberPlaceholder {
+    _numberPlaceholder = numberPlaceholder;
+    [self updatePlaceholders];
+}
+
+- (void)setCvcPlaceholder:(NSString *)cvcPlaceholder {
+    _cvcPlaceholder = cvcPlaceholder;
+    [self updatePlaceholders];
+}
+
+- (void)updatePlaceholders {
+    self.expirationTextField.placeholder = [NSString stringWithFormat:@"%@%@%@", self.monthPlaceholder, self.monthYearSeparator, self.yearPlaceholder];
+    self.cvcTextField.placeholder = self.cvcPlaceholder;
+    self.zipTextField.placeholder = self.zipPlaceholder;
+    self.cardNumberTextField.placeholder = self.numberPlaceholder;
 }
 
 - (void)setupBackSide {
@@ -150,8 +196,18 @@
     self.lastFourLabel.text = self.lastFour;
 }
 
+- (void)setupFrontSide {
+    self.lastFourLabel.hidden = self.expirationTextField.hidden = self.cvcTextField.hidden = self.zipTextField.hidden = YES;
+    self.cardNumberTextField.hidden = NO;
+}
+
+
 - (IBAction)next:(id)sender {
     if (self.activeTextField == self.cardNumberTextField) {
+        if (![self isValidCardNumber]){
+            [self invalidFieldState];
+            return;
+        }
         [self setupBackSide];
         [self.expirationTextField becomeFirstResponder];
     } else if (self.activeTextField == self.expirationTextField) {
@@ -163,8 +219,13 @@
 }
 
 - (IBAction)previous:(id)sender {
-    if (self.activeTextField == self.cardNumberTextField) {
-        [self setupBackSide];
+    if (self.activeTextField == self.expirationTextField) {
+        [self setupFrontSide];
+        [self.cardNumberTextField becomeFirstResponder];
+    } else if (self.activeTextField == self.cvcTextField) {
+        [self.expirationTextField becomeFirstResponder];
+    } else if (self.activeTextField == self.zipTextField) {
+        [self.cvcTextField becomeFirstResponder];
     }
 }
 
@@ -183,11 +244,24 @@
 #pragma mark - UITextFieldDelegate methods
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
-    if (textField == self.cvcTextField) {
+    if (textField == self.cardNumberTextField) {
+        self.paymentStep = OKPaymentStepCCNumber;
+        [self animateLeftView:self.cardType];
+    } else if (textField == self.cvcTextField) {
         [self animateLeftView:OKCardTypeCvc];
-    } else {
+        self.paymentStep = OKPaymentStepSecurityCode;
+    } else if (textField == self.expirationTextField) {
+        self.paymentStep = OKPaymentStepExpiration;
+        [self animateLeftView:self.cardType];
+    } else if (textField == self.zipTextField) {
+        self.paymentStep = OKPaymentStepSecurityZip;
         [self animateLeftView:self.cardType];
     }
+    
+    if ([self.delegate respondsToSelector:@selector(didChangePaymentStep:)]) {
+        [self.delegate didChangePaymentStep:self.paymentStep];
+    }
+    
     self.activeTextField = textField;
 }
 
@@ -221,13 +295,20 @@
             return NO;
         }
     } else if (self.activeTextField == self.expirationTextField) {
-        if (textField.text.length == 5) {
+        if (textField.text.length == 5 && ![string isEqualToString:@"0"]) {
             return NO;
         }
-        if ([string integerValue] < 10 && textField.text.length == 0 && ![string isEqualToString:@"0"]) {
+        
+        if ([string integerValue] > 1 && textField.text.length == 0 && ![string isEqualToString:@"0"]) {
             textField.text = [@"0" stringByAppendingFormat:@"%@/", string];
             return NO;
         }
+        
+        // If the first number is a one, the only valid
+        if (textField.text.length == 1 && [string integerValue] > 2) {
+            return NO;
+        }
+        
         if ([string isEqualToString:@"/"]) {
             if (textField.text.length == 1) {
                 textField.text = [@"0" stringByAppendingFormat:@"%@/", textField.text];
@@ -239,6 +320,11 @@
             textField.text = [textField.text stringByAppendingFormat:@"%@/", string];
             return NO;
         }
+    } else if (self.activeTextField == self.cvcTextField) {
+        if (textField.text.length == 4 && ![string isEqualToString:@""]) {
+            return NO;
+        }
+
     }
     
     return YES;
@@ -246,13 +332,22 @@
 
 - (void)expirationTextFieldValueChanged {
     if (self.expirationTextField.text.length == 5) {
-        NSArray *expirationParts = [self.expirationTextField.text componentsSeparatedByString:@"/"];
+        NSArray *expirationParts = [self.expirationTextField.text componentsSeparatedByString:self.monthYearSeparator];
         self.cardMonth = expirationParts[0];
         self.cardYear = expirationParts[1];
         [self validateExpiration];
     }
 
 }
+
+- (void)cvcTextFieldValueChanged {
+    if (self.expirationTextField.text.length > 2) {
+        self.cardCvc = self.cvcTextField.text;
+        [self next:self];
+    }
+    
+}
+
 
 - (void)cardNumberTextFieldValueChanged {
     if (self.ccNumberInvalid) {
@@ -265,42 +360,42 @@
     }
     
     if (self.cardType == OKCArdTypeMastercard) {
-        if (self.trimmedNumber.length == 16) {
-            [self validateCardNumber];
+        if (self.trimmedNumber.length == 16 && [self isValidCardNumber]) {
+            [self next:self];
         }
     } else if (self.cardType == OKCardTypeVisa) {
-        if ((self.trimmedNumber.length > 12 && self.trimmedNumber.length < 20)) {
-            [self validateCardNumber];
+        if ((self.trimmedNumber.length > 12 && self.trimmedNumber.length < 20) && [self isValidCardNumber]) {
+            [self next:self];
         }
+    } else if ([self isValidCardNumber]){
+        [self next:self];
     }
     
 }
 
-
-
 #pragma mark - Validation methods
-- (void)validateCardNumber {
+- (BOOL)isValidCardNumber {
     if (self.cardType == OKCardTypeUnknown) {
         NSLog(@"Invalid card type");
         [self invalidFieldState];
-        return;
+        return NO;
     }else if ( self.cardType == OKCardTypeVisa) {
         if (self.trimmedNumber.length == 16 && ![CreditCardValidation validateCard:self.trimmedNumber]) {
             [self invalidFieldState];
-            return;
+            return NO;
         } else if (![CreditCardValidation validateCard:self.trimmedNumber]) {
-            return;
+            return NO;
         }
     }else if (self.cardType == OKCArdTypeMastercard) {
         if (![CreditCardValidation validateCard:self.trimmedNumber]) {
             [self invalidFieldState];
-            return;
+            return NO;
         }
     }
     
     self.cardNumber = self.trimmedNumber;
     self.lastFour = [self.cardNumber substringFromIndex: [self.cardNumber length] - 4];
-    [self next:self];
+    return YES;
 }
 
 - (void)validateExpiration {
@@ -378,7 +473,8 @@
 - (void)invalidFieldState {
     self.containerView.image = [[UIImage imageNamed:@"field_cell_error"] resizableImageWithCapInsets:(UIEdgeInsetsMake(10.0, 10.0, 10.0, 10.0))];
     self.ccNumberInvalid = YES;
-    [self shakeAnimation:self.containerView];
+    [self shakeAnimation:self.activeTextField.textInputView];
+    self.activeTextField.textColor = [UIColor redColor];
 }
 
 - (void)resetFieldState {

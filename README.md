@@ -24,3 +24,9 @@ inputField.textFieldFont = [UIFont fontWithName:@"Helvetica" size:28];
 @property (strong, nonatomic) NSString *monthPlaceholder;
 @property (strong, nonatomic) NSString *yearPlaceholder;
 ```
+
+## Optional delegate methods 
+```objective-c
+- (void)paymentDetailsValid;
+- (void)didChangePaymentStep:(OKPaymentStep)paymentStep;
+```

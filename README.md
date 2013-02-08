@@ -5,11 +5,36 @@ A implementation of Square's single input payment for iOS
 
 
 ## Usage
+### Using without storyboard
 ```objective-c
-OKSingleInputPayment *inputField = [[OKSingleInputPayment alloc] initWithFrame:CGRectMake(20, 60, 280, 50)];
-inputField.textFieldFont = [UIFont fontWithName:@"Helvetica" size:28];
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+  // Do any additional setup after loading the view, typically from a nib.
+    OKSingleInputPayment *inputField = [[OKSingleInputPayment alloc] initWithFrame:CGRectMake(20, 100, 280, 50)];
+    self.singlePayment.monthPlaceholder = @"мм";
+    self.singlePayment.yearPlaceholder = @"гг";
+    [self.view addSubview:inputField];
+
+}
 
 ```
+
+### Using with storyboard
+Drag a UIView into your scene and add the custom class OKSingleInputPayment, wire up your IBOutlets as normal.
+
+```objective-c
+#import <UIKit/UIKit.h>
+#import "OKSingleInputPayment.h"
+
+@interface ViewController : UIViewController <OKSingleInputPaymentDelegate>
+
+@property (weak, nonatomic) IBOutlet OKSingleInputPayment *singlePayment;
+
+@end
+
+```
+
 
 ## Configurable Properties 
 ```objective-c

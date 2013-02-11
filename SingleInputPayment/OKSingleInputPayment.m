@@ -111,11 +111,12 @@
     self.cardNumberTextField = [[UITextField alloc] initWithFrame:CGRectMake((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding, (self.frame.size.height / 2) - ((self.frame.size.height * 0.9) /2), self.frame.size.width - ((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding) - 5, self.frame.size.height * 0.9)];
     [self.numberPlaceholder sizeWithFont:self.defaultFont minFontSize:self.cardNumberTextField.minimumFontSize actualFontSize:&maximumFontForCardNumber forWidth:self.cardNumberTextField.frame.size.width lineBreakMode:NSLineBreakByClipping];
 
-    self.cardNumberTextField.backgroundColor = [UIColor yellowColor];
+    //self.cardNumberTextField.backgroundColor = [UIColor yellowColor];
     self.cardNumberTextField.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForCardNumber];
     self.cardNumberTextField.delegate = self;
     self.cardNumberTextField.adjustsFontSizeToFitWidth = YES;
     self.cardNumberTextField.keyboardType = UIKeyboardTypeNumberPad;
+    self.cardNumberTextField.backgroundColor = [UIColor clearColor];
     self.cardNumberTextField.inputAccessoryView = self.accessoryToolBar;
     [self.cardNumberTextField addTarget:self action:@selector(cardNumberTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
     self.cardNumberTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
@@ -128,7 +129,8 @@
     
     [@"12345" sizeWithFont:self.defaultFont minFontSize:self.cardNumberTextField.minimumFontSize actualFontSize:&maximumFontForFields forWidth:widthPerField lineBreakMode:NSLineBreakByClipping];
     self.lastFourLabel = [[UILabel alloc] initWithFrame:CGRectMake((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
-    self.lastFourLabel.backgroundColor = [UIColor greenColor];
+    //self.lastFourLabel.backgroundColor = [UIColor greenColor];
+    self.lastFourLabel.backgroundColor = [UIColor clearColor];
     self.lastFourLabel.hidden = YES;
     self.lastFourLabel.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForFields];
     self.lastFourLabel.adjustsFontSizeToFitWidth = YES;
@@ -138,7 +140,8 @@
     [self addSubview:self.lastFourLabel];
     
     self.expirationTextField = [[UITextField alloc] initWithFrame:CGRectMake((self.lastFourLabel.frame.origin.x + self.lastFourLabel.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
-    self.expirationTextField.backgroundColor = [UIColor greenColor];
+    //self.expirationTextField.backgroundColor = [UIColor greenColor];
+    self.expirationTextField.backgroundColor = [UIColor clearColor];
     self.expirationTextField.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForFields];
     self.expirationTextField.adjustsFontSizeToFitWidth = YES;
     self.expirationTextField.delegate = self;
@@ -152,7 +155,8 @@
     
     
     self.cvcTextField = [[UITextField alloc] initWithFrame:CGRectMake(self.expirationTextField.frame.origin.x + self.expirationTextField.frame.size.width + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
-    self.cvcTextField.backgroundColor = [UIColor greenColor];
+    //self.cvcTextField.backgroundColor = [UIColor greenColor];
+    self.cvcTextField.backgroundColor = [UIColor clearColor];
     self.cvcTextField.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForFields];
     self.cvcTextField.adjustsFontSizeToFitWidth = YES;
     self.cvcTextField.delegate = self;
@@ -165,7 +169,8 @@
     [self addSubview:self.cvcTextField];
     
     self.zipTextField = [[UITextField alloc] initWithFrame:CGRectMake(self.cvcTextField.frame.origin.x + self.cvcTextField.frame.size.width + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
-    self.zipTextField.backgroundColor = [UIColor greenColor];
+    //self.zipTextField.backgroundColor = [UIColor greenColor];
+    self.zipTextField.backgroundColor = [UIColor clearColor];
     self.zipTextField.adjustsFontSizeToFitWidth = YES;
     self.zipTextField.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForFields];
     self.zipTextField.delegate = self;

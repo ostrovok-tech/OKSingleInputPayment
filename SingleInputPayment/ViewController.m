@@ -32,4 +32,10 @@
     // Dispose of any resources that can be recreated.
 }
 
+#pragma mark OKSingleInputPaymentDelegate methods
+
+- (void)didChangePaymentStep:(OKPaymentStep)paymentStep {
+    
+}
+
 @end

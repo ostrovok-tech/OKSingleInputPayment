@@ -20,9 +20,11 @@
 	// Do any additional setup after loading the view, typically from a nib.
     self.singlePayment.monthPlaceholder = @"мм";
     self.singlePayment.yearPlaceholder = @"гг";
+    self.singlePayment.delegate = self;
     
-    OKSingleInputPayment *inputField = [[OKSingleInputPayment alloc] initWithFrame:CGRectMake(20, 120, 280, 50)];
-    [self.view addSubview:inputField];
+    self.currentStep.text = @"";
+    //OKSingleInputPayment *inputField = [[OKSingleInputPayment alloc] initWithFrame:CGRectMake(20, 120, 280, 50)];
+    //[self.view addSubview:inputField];
 
 }
 
@@ -35,7 +37,22 @@
 #pragma mark OKSingleInputPaymentDelegate methods
 
 - (void)didChangePaymentStep:(OKPaymentStep)paymentStep {
-    
+    switch (paymentStep) {
+        case OKPaymentStepCCNumber:
+            self.currentStep.text = @"CC Number";
+            break;
+        case OKPaymentStepExpiration:
+            self.currentStep.text = @"Expiration Info";
+            break;
+        case OKPaymentStepSecurityCode:
+            self.currentStep.text = @"CVC code";
+            break;
+        case OKPaymentStepSecurityZip:
+            self.currentStep.text = @"Zipcode";
+            break;
+        default:
+            break;
+    }
 }
 
 @end

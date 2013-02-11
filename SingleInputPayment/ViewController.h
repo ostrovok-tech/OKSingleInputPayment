@@ -10,7 +10,10 @@
 #import "OKSingleInputPayment.h"
 
 @interface ViewController : UIViewController <OKSingleInputPaymentDelegate>
+@property (weak, nonatomic) IBOutlet UILabel *currentStep;
 
 @property (weak, nonatomic) IBOutlet OKSingleInputPayment *singlePayment;
+@property (weak, nonatomic) IBOutlet UILabel *cardNumber;
+@property (weak, nonatomic) IBOutlet UILabel *nameLabel;
 
 @end

@@ -77,7 +77,7 @@
     self.yearPlaceholder = @"yy";
     self.monthYearSeparator = @"/";
     self.cvcPlaceholder = @"cvc";
-    self.zipPlaceholder = @"55128";
+    self.zipPlaceholder = @"zipcode";
     self.numberPlaceholder = @"4111 1111 1111 1111";
     self.accessoryToolBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, 44)];
     [self setupAccessoryToolbar];
@@ -178,8 +178,13 @@
     self.zipTextField.inputAccessoryView = self.accessoryToolBar;
     self.zipTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     self.zipTextField.keyboardType = UIKeyboardTypeNumberPad;
+    [self.zipTextField addTarget:self action:@selector(zipTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
     [self addSubview:self.zipTextField];
 
+}
+
+- (BOOL)getIsFormValid {
+    return [self isFormValid];
 }
 
 #pragma mark - Setters for updating placholders when client overrides defaults
@@ -360,6 +365,10 @@
             return NO;
         }
 
+    } else if (self.activeTextField == self.zipTextField) {
+        if (textField.text.length == 10 && ![string isEqualToString:@""]) {
+            return NO;
+        }
     }
     
     return YES;
@@ -393,7 +402,11 @@
 }
 
 - (void)zipTextFieldValueChanged {
-    
+    if (self.zipTextField.text.length > 4) {
+        if ([self isValidZip]) {
+            [self next:self];
+        }
+    }
 }
 
 - (void)cardNumberTextFieldValueChanged {
@@ -411,7 +424,7 @@
         if ((self.trimmedNumber.length > 12 && self.trimmedNumber.length < 20) && [self isValidCardNumber]) {
             [self next:self];
         }
-    } else if ([self isValidCardNumber]){
+    } else if ([self isValidCardNumber]) {
         [self next:self];
     }
     
@@ -419,11 +432,11 @@
 
 #pragma mark - Validation methods
 - (BOOL)isFormValid {
-    if ([self isValidExpiration] && [self isValidCardNumber]) {
+    if ([self isValidExpiration] && [self isValidCardNumber] && [self isValidZip] && [self isValidCvc]) {
         return YES;
-    } else {
-        return NO;
     }
+    
+    return NO;
 }
 
 - (BOOL)isValidCardNumber {
@@ -456,6 +469,19 @@
         return YES;
     }
     [self invalidFieldState];
+    return NO;
+}
+
+- (BOOL)isValidZip {
+    if (self.includeZipCode && self.zipTextField.text.length > 5) 
+        return YES;
+    
+    return NO;
+}
+
+- (BOOL)isValidCvc {
+    if (self.cvcTextField.text.length)
+        return YES;
     return NO;
 }
     

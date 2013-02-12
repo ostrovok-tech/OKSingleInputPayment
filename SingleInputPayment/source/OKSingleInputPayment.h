@@ -46,6 +46,8 @@ typedef enum {
 @property (strong, readonly) NSString *cardMonth;
 @property (strong, readonly) NSString *cardYear;
 @property (strong, readonly) NSString *cardZip;
+@property (readonly) BOOL isFormValid;
+
 
 @property (readonly) OKCardType cardType;
 /**

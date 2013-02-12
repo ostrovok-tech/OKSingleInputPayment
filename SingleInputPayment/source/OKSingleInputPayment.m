@@ -12,6 +12,10 @@
 @interface OKSingleInputPayment() {
     CGFloat maximumFontForCardNumber;
     CGFloat maximumFontForFields;
+    CGFloat maximumWidthSpace;
+    CGFloat widthPerField;
+    NSInteger numberOfFields;
+    NSInteger padding;
 
 }
 @property (strong, nonatomic) UITextField *cardNumberTextField;
@@ -36,7 +40,7 @@
 @property OKCardType displayingCardType;
 @property OKPaymentStep paymentStep;
 
-@property BOOL ccNumberInvalid;
+@property BOOL formInvalid;
 
 @property (strong, nonatomic) UIToolbar *accessoryToolBar;
 
@@ -49,16 +53,17 @@
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
+        
         [self commonInit:frame];
     }
     return self;
 }
 
-
 - (id)initWithCoder:(NSCoder *)aDecoder {
     
     if(self = [super initWithCoder:aDecoder])
     {
+        numberOfFields = 4;
         [self commonInit:self.frame];
     }
     return self;
@@ -69,18 +74,22 @@
     self.defaultFont = [UIFont fontWithName:@"Helvetica" size:28];
     self.defaultFontColor = [UIColor blackColor];
     
-    self.includeZipCode = YES;
     self.paymentStep = OKPaymentStepCCNumber;
     self.displayingCardType = OKCardTypeUnknown;
     _cardType = OKCardTypeUnknown;
+    _includeZipCode = YES;
+    numberOfFields = 4;
+    padding = 5;
+    
     self.monthPlaceholder = @"mm";
     self.yearPlaceholder = @"yy";
     self.monthYearSeparator = @"/";
     self.cvcPlaceholder = @"cvc";
     self.zipPlaceholder = @"zipcode";
     self.numberPlaceholder = @"4111 1111 1111 1111";
-    self.accessoryToolBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, 44)];
-    [self setupAccessoryToolbar];
+    self.useInputAccessory = YES;
+    
+    
     [self updatePlaceholders];
     
     
@@ -107,7 +116,7 @@
     self.leftCardView.backgroundColor = [UIColor blueColor];
     [self.leftCardView setFrame:CGRectMake(10, (self.frame.size.height / 2) - (self.leftCardView.frame.size.height/2), self.leftCardView.frame.size.width, self.leftCardView.frame.size.height)];
     
-    int padding = 5;
+    
     self.cardNumberTextField = [[UITextField alloc] initWithFrame:CGRectMake((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding, (self.frame.size.height / 2) - ((self.frame.size.height * 0.9) /2), self.frame.size.width - ((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding) - 5, self.frame.size.height * 0.9)];
     [self.numberPlaceholder sizeWithFont:self.defaultFont minFontSize:self.cardNumberTextField.minimumFontSize actualFontSize:&maximumFontForCardNumber forWidth:self.cardNumberTextField.frame.size.width lineBreakMode:NSLineBreakByClipping];
 
@@ -124,15 +133,14 @@
     [self addSubview:self.cardNumberTextField];
     [self addSubview:self.leftCardView];
     
-    float availSpace = self.frame.size.width - ((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + (padding * 4));
-    float widthPerField = availSpace / 4;
+    maximumWidthSpace = self.frame.size.width - ((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + (padding * numberOfFields));
+    widthPerField = maximumWidthSpace / numberOfFields;
     
     [@"12345" sizeWithFont:self.defaultFont minFontSize:self.cardNumberTextField.minimumFontSize actualFontSize:&maximumFontForFields forWidth:widthPerField lineBreakMode:NSLineBreakByClipping];
     self.lastFourLabel = [[UILabel alloc] initWithFrame:CGRectMake((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
     //self.lastFourLabel.backgroundColor = [UIColor greenColor];
     self.lastFourLabel.backgroundColor = [UIColor clearColor];
     self.lastFourLabel.hidden = YES;
-    self.lastFourLabel.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForFields];
     self.lastFourLabel.adjustsFontSizeToFitWidth = YES;
     UITapGestureRecognizer *tg = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(previous:)];
     [self.lastFourLabel addGestureRecognizer:tg];
@@ -142,7 +150,6 @@
     self.expirationTextField = [[UITextField alloc] initWithFrame:CGRectMake((self.lastFourLabel.frame.origin.x + self.lastFourLabel.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
     //self.expirationTextField.backgroundColor = [UIColor greenColor];
     self.expirationTextField.backgroundColor = [UIColor clearColor];
-    self.expirationTextField.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForFields];
     self.expirationTextField.adjustsFontSizeToFitWidth = YES;
     self.expirationTextField.delegate = self;
     self.expirationTextField.hidden = YES;
@@ -157,7 +164,6 @@
     self.cvcTextField = [[UITextField alloc] initWithFrame:CGRectMake(self.expirationTextField.frame.origin.x + self.expirationTextField.frame.size.width + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
     //self.cvcTextField.backgroundColor = [UIColor greenColor];
     self.cvcTextField.backgroundColor = [UIColor clearColor];
-    self.cvcTextField.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForFields];
     self.cvcTextField.adjustsFontSizeToFitWidth = YES;
     self.cvcTextField.delegate = self;
     self.cvcTextField.hidden = YES;
@@ -172,7 +178,6 @@
     //self.zipTextField.backgroundColor = [UIColor greenColor];
     self.zipTextField.backgroundColor = [UIColor clearColor];
     self.zipTextField.adjustsFontSizeToFitWidth = YES;
-    self.zipTextField.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForFields];
     self.zipTextField.delegate = self;
     self.zipTextField.hidden = YES;
     self.zipTextField.inputAccessoryView = self.accessoryToolBar;
@@ -180,7 +185,22 @@
     self.zipTextField.keyboardType = UIKeyboardTypeNumberPad;
     [self.zipTextField addTarget:self action:@selector(zipTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
     [self addSubview:self.zipTextField];
+    
+    [self updateDefaultFonts];
 
+}
+
+- (void)adjustFields {
+        
+    maximumWidthSpace = self.frame.size.width - ((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + (padding * numberOfFields));
+    widthPerField = maximumWidthSpace / numberOfFields;
+    [@"12345" sizeWithFont:self.defaultFont minFontSize:self.cardNumberTextField.minimumFontSize actualFontSize:&maximumFontForFields forWidth:widthPerField lineBreakMode:NSLineBreakByClipping];
+    
+    [self.lastFourLabel setFrame:CGRectMake((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
+    [self.expirationTextField setFrame:CGRectMake((self.lastFourLabel.frame.origin.x + self.lastFourLabel.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
+    [self.cvcTextField setFrame:CGRectMake(self.expirationTextField.frame.origin.x + self.expirationTextField.frame.size.width + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
+    if (self.includeZipCode)
+        [self.zipTextField setFrame:CGRectMake(self.cvcTextField.frame.origin.x + self.cvcTextField.frame.size.width + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
 }
 
 - (BOOL)getIsFormValid {
@@ -188,6 +208,14 @@
 }
 
 #pragma mark - Setters for updating placholders when client overrides defaults
+- (void)setUseInputAccessory:(BOOL)useInputAccessory {
+    _useInputAccessory = useInputAccessory;
+    if (useInputAccessory) {
+        [self setupAccessoryToolbar];
+    } else {
+        [self removeAccessoryToolbar];
+    }
+}
 - (void)setYearPlaceholder:(NSString *)yearPlaceholder {
     
     _yearPlaceholder = yearPlaceholder;
@@ -219,6 +247,25 @@
     [self updatePlaceholders];
 }
 
+- (void)setIncludeZipCode:(BOOL)includeZipCode {
+    if (includeZipCode) {
+        numberOfFields = 4;
+    } else {
+        numberOfFields = 3;
+    }
+    _includeZipCode = includeZipCode;
+}
+
+- (void)setDefaultFont:(UIFont *)defaultFont {
+    _defaultFont = defaultFont;
+    [self updateDefaultFonts];
+}
+
+- (void)updateDefaultFonts {
+    self.cardNumberTextField.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForCardNumber];
+    self.lastFourLabel.font = self.expirationTextField.font = self.cvcTextField.font = self.zipTextField.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForFields];
+}
+
 - (void)updatePlaceholders {
     self.expirationTextField.placeholder = [NSString stringWithFormat:@"%@%@%@", self.monthPlaceholder, self.monthYearSeparator, self.yearPlaceholder];
     self.cvcTextField.placeholder = self.cvcPlaceholder;
@@ -226,6 +273,7 @@
     self.cardNumberTextField.placeholder = self.numberPlaceholder;
 }
 
+#pragma mark - 
 - (void)setupBackSide {
     self.cardNumberTextField.hidden = YES;
     self.lastFourLabel.hidden = self.expirationTextField.hidden = self.cvcTextField.hidden = NO;
@@ -240,7 +288,7 @@
     self.cardNumberTextField.hidden = NO;
 }
 
-
+#pragma mark - InputAccessory actions
 - (IBAction)next:(id)sender {
     if (self.activeTextField == self.cardNumberTextField) {
         if (![self isValidCardNumber]){
@@ -268,15 +316,27 @@
     }
 }
 
+- (IBAction)done:(id)sender {
+    [self isFormValid];
+    if ([self.delegate respondsToSelector:@selector(formDidBecomeValid)]){
+        [self.delegate formDidBecomeValid];
+    }
+}
 
 - (void)setupAccessoryToolbar {
+    self.accessoryToolBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, 44)];
     UIBarButtonItem *previousButton = [[UIBarButtonItem alloc] initWithTitle:@"Previous" style:UIBarButtonItemStyleBordered target:self action:@selector(previous:)];
     UIBarButtonItem *nextButton = [[UIBarButtonItem alloc] initWithTitle:@"Next" style:UIBarButtonItemStyleBordered target:self action:@selector(next:)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     
-    //UIBarButtonItem* flexSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    //UIBarButtonItem* doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneTyping:)];
-    self.accessoryToolBar.items = @[flexibleSpace, previousButton, nextButton];
+    UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done:)];
+    self.accessoryToolBar.items = @[previousButton, nextButton, flexibleSpace, doneButton];
+    self.cardNumberTextField.inputAccessoryView = self.expirationTextField.inputAccessoryView = self.cvcTextField.inputAccessoryView = self.zipTextField.inputAccessoryView = self.accessoryToolBar;
+
+}
+
+- (void)removeAccessoryToolbar {
+    self.cardNumberTextField.inputAccessoryView = self.expirationTextField.inputAccessoryView = self.cvcTextField.inputAccessoryView = self.zipTextField.inputAccessoryView = nil;
 }
 
 - (UIFont *)fontWithNewSize:(UIFont *)font newSize:(CGFloat)pointSize {
@@ -310,7 +370,11 @@
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
-    NSLog(@"Text: %@, replacementString: %@, Length of text %d", textField.text, string, textField.text.length);
+    NSLog(@"Text: %@, replacementString: %@, Length of text %d, location: %d, length: %d", textField.text, string, textField.text.length, range.location, range.length);
+    
+    // This is lazy and should be refactored. Don't allow the user to move the cursor around the text field as text formatting can't handle it very gracefully
+    if(range.location < textField.text.length && !((textField.text.length - range.location) == 1  && [string isEqualToString:@""])) return NO;
+    
     if ([string isEqualToString:@" "])
         return NO;
     
@@ -375,7 +439,7 @@
 }
 
 - (void)expirationTextFieldValueChanged {
-    if (self.ccNumberInvalid)
+    if (self.formInvalid)
         [self resetFieldState];
     
     if (self.expirationTextField.text.length == 5) {
@@ -390,6 +454,9 @@
 }
 
 - (void)cvcTextFieldValueChanged {
+    if (self.formInvalid)
+        [self resetFieldState];
+    
     if (self.cvcTextField.text.length > 2) {
         _cardCvc = self.cvcTextField.text;
         if (self.includeZipCode) {
@@ -402,6 +469,9 @@
 }
 
 - (void)zipTextFieldValueChanged {
+    if (self.formInvalid)
+        [self resetFieldState];
+    
     if (self.zipTextField.text.length > 4) {
         if ([self isValidZip]) {
             [self next:self];
@@ -410,7 +480,7 @@
 }
 
 - (void)cardNumberTextFieldValueChanged {
-    if (self.ccNumberInvalid) 
+    if (self.formInvalid)
         [self resetFieldState];
     
     self.trimmedNumber = [self.cardNumberTextField.text stringByReplacingOccurrencesOfString:@" " withString:@""];
@@ -432,11 +502,25 @@
 
 #pragma mark - Validation methods
 - (BOOL)isFormValid {
-    if ([self isValidExpiration] && [self isValidCardNumber] && [self isValidZip] && [self isValidCvc]) {
-        return YES;
+    if (![self isValidExpiration]) {
+        [self.expirationTextField becomeFirstResponder];
+        [self invalidFieldState];
+        return NO;
+    }else if (![self isValidCvc]) {
+        [self.cvcTextField becomeFirstResponder];
+        [self invalidFieldState];
+        return NO;
+    } else if (self.includeZipCode && ![self isValidZip]) {
+        [self.zipTextField becomeFirstResponder];
+        [self invalidFieldState];
+        return NO;
+    } else if (![self isValidCardNumber]) {
+        [self.cardNumberTextField becomeFirstResponder];
+        [self invalidFieldState];
+        return NO;
     }
     
-    return NO;
+    return YES;
 }
 
 - (BOOL)isValidCardNumber {
@@ -557,7 +641,7 @@
 #pragma mark - Field styles
 - (void)invalidFieldState {
     self.containerView.image = [[UIImage imageNamed:@"field_cell_error"] resizableImageWithCapInsets:(UIEdgeInsetsMake(10.0, 10.0, 10.0, 10.0))];
-    self.ccNumberInvalid = YES;
+    self.formInvalid = YES;
     [self shakeAnimation:self.activeTextField.textInputView];
     self.activeTextField.textColor = [UIColor redColor];
 }
@@ -565,7 +649,7 @@
 - (void)resetFieldState {
     self.containerView.image = [[UIImage imageNamed:@"field_cell"] resizableImageWithCapInsets:(UIEdgeInsetsMake(10.0, 10.0, 10.0, 10.0))];
     self.activeTextField.textColor = self.defaultFontColor;
-    self.ccNumberInvalid = NO;
+    self.formInvalid = NO;
 }
 
 

@@ -53,11 +53,11 @@ typedef enum {
 /**
   Optionally include the zipcode field. This is an optional field as not all locales support this field..
  */
-@property BOOL includeZipCode;
+@property (nonatomic) BOOL includeZipCode;
 /**
  Optionally use an inputaccessory view with previous<->next
  */
-@property BOOL useInputAccessory;
+@property (nonatomic) BOOL useInputAccessory;
 
 @property (strong, nonatomic) NSString *cvcPlaceholder;
 @property (strong, nonatomic) NSString *zipPlaceholder;
@@ -70,14 +70,13 @@ typedef enum {
 
 @property (weak, nonatomic) id <OKSingleInputPaymentDelegate> delegate;
 
-
 @end
 
 
 @protocol OKSingleInputPaymentDelegate <NSObject>
 
 @optional
-- (void)paymentDetailsValid;
+- (void)formDidBecomeValid;
 - (void)didChangePaymentStep:(OKPaymentStep)paymentStep;
 
 @end

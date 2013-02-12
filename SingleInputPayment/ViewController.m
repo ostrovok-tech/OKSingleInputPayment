@@ -23,6 +23,8 @@
     self.singlePayment.delegate = self;
     
     self.currentStep.text = @"";
+    self.singlePayment.includeZipCode = NO;
+    self.singlePayment.defaultFont = [UIFont fontWithName:@"Copperplate" size:28];
     //OKSingleInputPayment *inputField = [[OKSingleInputPayment alloc] initWithFrame:CGRectMake(20, 120, 280, 50)];
     //[self.view addSubview:inputField];
 

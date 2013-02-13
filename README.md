@@ -1,7 +1,7 @@
 single-input-payment
 ====================
 
-An implementation of Square's single input payment for iOS
+A customizable implementation of Square's single input payment for iOS. 
 
 
 ## Usage
@@ -14,6 +14,7 @@ An implementation of Square's single input payment for iOS
     OKSingleInputPayment *inputField = [[OKSingleInputPayment alloc] initWithFrame:CGRectMake(20, 100, 280, 50)];
     self.singlePayment.monthPlaceholder = @"мм";
     self.singlePayment.yearPlaceholder = @"гг";
+    self.singlePayment.namePlaceholder = @"Владелец карты";
     [self.view addSubview:inputField];
 
 }
@@ -39,18 +40,34 @@ Drag a UIView into your scene and add the custom class OKSingleInputPayment, wir
 ## Configurable Properties 
 
 ```objective-c
-@property (strong, nonatomic) UIFont *defaultFont;
-@property (strong, nonathomic) UIColor *defaultFontColor;
-@property (strong, nonatomic) UIFont *placeholderFont;
+/**
+*  Optionally include the zipcode field. This is an optional field as not all locales support this field..
+*  This expects a zip code > 4 characters long
+*/
+@property (nonatomic) BOOL includeZipCode;
+
+/**
+ * Optionally use an inputaccessory view with previous<->next and done buttons. This will always be used when enabling
+ * the optional name field as the user needs a way to move forward 
+ */ 
+@property (nonatomic) BOOL useInputAccessory;
+
+/**
+ * Optionally include the cardholder's name field. Turning this field on requires the input accessory view since there is no
+ * good way to advance the user's form postion based on input validation
+ */
+@property (nonatomic) BOOL includeName;
+
 @property (strong, nonatomic) NSString *cvcPlaceholder;
 @property (strong, nonatomic) NSString *zipPlaceholder;
 @property (strong, nonatomic) NSString *numberPlaceholder;
 @property (strong, nonatomic) NSString *monthYearSeparator;
 @property (strong, nonatomic) NSString *monthPlaceholder;
 @property (strong, nonatomic) NSString *yearPlaceholder;
+@property (strong, nonatomic) NSString *namePlaceholder;
 
-@property BOOL includeZipCode;
-@property BOOL useInputAccessory
+@property (strong, nonatomic) UIFont *placeholderFont;
+
 ```
 
 ## Readable properties
@@ -63,8 +80,13 @@ Drag a UIView into your scene and add the custom class OKSingleInputPayment, wir
 @property (readonly) OKCardType cardType;
 ```
 
-## Optional <OKSingleInputPaymentDelegate> delegate methods 
+## Optional OKSingleInputPaymentDelegate delegate methods 
 ```objective-c
-- (void)paymentDetailsValid;
+- (void)formDidBecomeValid;
 - (void)didChangePaymentStep:(OKPaymentStep)paymentStep;
 ```
+
+## Todo
+* Support all types of cards 
+* Allow previous field movement by deletion 
+* Figure out a better way to retreive cardholder's name 

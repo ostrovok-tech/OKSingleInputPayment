@@ -25,6 +25,7 @@
     
     self.currentStep.text = @"";
     self.singlePayment.includeZipCode = NO;
+    self.singlePayment.includeName = YES;
     self.singlePayment.defaultFont = [UIFont fontWithName:@"Copperplate" size:28];
     //OKSingleInputPayment *inputField = [[OKSingleInputPayment alloc] initWithFrame:CGRectMake(20, 120, 280, 50)];
     //[self.view addSubview:inputField];
@@ -61,6 +62,8 @@
 - (void)formDidBecomeValid {
     UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"Valid Form" message:@"Form is valid!" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil];
     [av show];
+    self.nameLabel.text = self.singlePayment.cardName;
+    self.cardNumber.text = self.singlePayment.cardNumber;
 }
 
 @end

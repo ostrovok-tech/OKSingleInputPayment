@@ -79,6 +79,7 @@
     self.displayingCardType = OKCardTypeUnknown;
     _cardType = OKCardTypeUnknown;
     _includeZipCode = YES;
+    _includeName = NO;
     numberOfFields = 4;
     padding = 5;
     
@@ -132,6 +133,18 @@
     [self.cardNumberTextField addTarget:self action:@selector(cardNumberTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
     self.cardNumberTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     
+    self.nameTextField = [[UITextField alloc] initWithFrame:self.cardNumberTextField.frame];
+    self.nameTextField.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForCardNumber];
+    self.nameTextField.delegate = self;
+    self.nameTextField.adjustsFontSizeToFitWidth = YES;
+    self.nameTextField.keyboardType = UIKeyboardTypeNumberPad;
+    self.nameTextField.backgroundColor = [UIColor clearColor];
+    self.nameTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    self.nameTextField.inputAccessoryView = self.accessoryToolBar;
+    self.nameTextField.hidden = YES;
+    [self.nameTextField addTarget:self action:@selector(nameTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
+
+    [self addSubview:self.nameTextField];
     [self addSubview:self.cardNumberTextField];
     [self addSubview:self.leftCardView];
     
@@ -263,13 +276,22 @@
     _includeZipCode = includeZipCode;
 }
 
+- (void)setIncludeName:(BOOL)includeName {
+    _includeName = includeName;
+    if (includeName) {
+        [self setupName];
+    } else {
+        [self setupCarNumber];
+    }
+}
+
 - (void)setDefaultFont:(UIFont *)defaultFont {
     _defaultFont = defaultFont;
     [self updateDefaultFonts];
 }
 
 - (void)updateDefaultFonts {
-    self.cardNumberTextField.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForCardNumber];
+    self.nameTextField.font = self.cardNumberTextField.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForCardNumber];
     self.lastFourLabel.font = self.expirationTextField.font = self.cvcTextField.font = self.zipTextField.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForFields];
 }
 
@@ -278,6 +300,7 @@
     self.cvcTextField.placeholder = self.cvcPlaceholder;
     self.zipTextField.placeholder = self.zipPlaceholder;
     self.cardNumberTextField.placeholder = self.numberPlaceholder;
+    self.nameTextField.placeholder = self.namePlaceholder;
 }
 
 #pragma mark - 
@@ -321,7 +344,10 @@
 }
 
 - (IBAction)previous:(id)sender {
-    if (self.activeTextField == self.expirationTextField) {
+    if (self.activeTextField == self.cardNumberTextField && self.includeName) {
+        [self setupName];
+        [self.nameTextField becomeFirstResponder];
+    }else if (self.activeTextField == self.expirationTextField) {
         [self setupCarNumber];
         [self.cardNumberTextField becomeFirstResponder];
     } else if (self.activeTextField == self.cvcTextField) {
@@ -364,7 +390,10 @@
 #pragma mark - UITextFieldDelegate methods
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
-    if (textField == self.cardNumberTextField) {
+    if (textField == self.nameTextField) {
+        self.paymentStep = OKPaymentStepName;
+        [self animateLeftView:self.cardType];
+    } if (textField == self.cardNumberTextField) {
         self.paymentStep = OKPaymentStepCCNumber;
         [self animateLeftView:self.cardType];
     } else if (textField == self.cvcTextField) {
@@ -391,7 +420,7 @@
     // This is lazy and should be refactored. Don't allow the user to move the cursor around the text field as text formatting can't handle it very gracefully
     if(range.location < textField.text.length && !((textField.text.length - range.location) == 1  && [string isEqualToString:@""])) return NO;
     
-    if ([string isEqualToString:@" "])
+    if ([string isEqualToString:@" "] && textField != self.nameTextField)
         return NO;
     
     if (self.activeTextField == self.cardNumberTextField) {
@@ -489,6 +518,7 @@
         [self resetFieldState];
     
     if (self.zipTextField.text.length > 4) {
+        _cardZip = self.zipTextField.text;
         if ([self isValidZip]) {
             [self next:self];
         }
@@ -516,6 +546,15 @@
     
 }
 
+- (void)nameTextFieldValueChanged {
+    if (self.formInvalid)
+        [self resetFieldState];
+    
+    if (self.nameTextField.text.length > 0) {
+        _cardName = self.nameTextField.text;
+    }
+}
+
 #pragma mark - Validation methods
 - (BOOL)isFormValid {
     if (![self isValidExpiration]) {
@@ -532,6 +571,10 @@
         return NO;
     } else if (![self isValidCardNumber]) {
         [self.cardNumberTextField becomeFirstResponder];
+        [self invalidFieldState];
+        return NO;
+    } else if (![self isValidName]) {
+        [self.nameTextField becomeFirstResponder];
         [self invalidFieldState];
         return NO;
     }
@@ -582,6 +625,13 @@
 - (BOOL)isValidCvc {
     if (self.cvcTextField.text.length)
         return YES;
+    return NO;
+}
+
+- (BOOL)isValidName {
+    if (self.nameTextField.text.length > 0 || !self.includeName) {
+        return YES;
+    }
     return NO;
 }
     

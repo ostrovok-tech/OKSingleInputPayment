@@ -23,6 +23,7 @@
 #import <UIKit/UIKit.h>
 
 typedef enum {
+    OKPaymentStepName,
     OKPaymentStepCCNumber,
     OKPaymentStepExpiration,
     OKPaymentStepSecurityCode,
@@ -32,6 +33,8 @@ typedef enum {
 typedef enum {
     OKCardTypeVisa,
     OKCArdTypeMastercard,
+    OKCardTypeAmericanExpress,
+    OKCardTypeDiscover,
     OKCardTypeUnknown,
     OKCardTypeCvc
 } OKCardType;
@@ -50,14 +53,22 @@ typedef enum {
 
 
 @property (readonly) OKCardType cardType;
+
 /**
   Optionally include the zipcode field. This is an optional field as not all locales support this field..
  */
 @property (nonatomic) BOOL includeZipCode;
+
 /**
  Optionally use an inputaccessory view with previous<->next
  */
 @property (nonatomic) BOOL useInputAccessory;
+
+/**
+ * Optionally include the cardholder's name field. Turning this field on requires the input accessory view since there is no
+ * good way to advance the user's form postion based on input validation
+ */
+@property (nonatomic) BOOL includeName;
 
 @property (strong, nonatomic) NSString *cvcPlaceholder;
 @property (strong, nonatomic) NSString *zipPlaceholder;
@@ -65,6 +76,7 @@ typedef enum {
 @property (strong, nonatomic) NSString *monthYearSeparator;
 @property (strong, nonatomic) NSString *monthPlaceholder;
 @property (strong, nonatomic) NSString *yearPlaceholder;
+@property (strong, nonatomic) NSString *namePlaceholder;
 
 @property (strong, nonatomic) UIFont *placeholderFont;
 

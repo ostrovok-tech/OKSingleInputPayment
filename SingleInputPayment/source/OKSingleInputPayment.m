@@ -16,8 +16,9 @@
     CGFloat widthPerField;
     NSInteger numberOfFields;
     NSInteger padding;
-
 }
+
+@property (strong, nonatomic) UITextField *nameTextField;
 @property (strong, nonatomic) UITextField *cardNumberTextField;
 @property (strong, nonatomic) UITextField *expirationTextField;
 @property (strong, nonatomic) UITextField *cvcTextField;
@@ -87,6 +88,7 @@
     self.cvcPlaceholder = @"cvc";
     self.zipPlaceholder = @"zipcode";
     self.numberPlaceholder = @"4111 1111 1111 1111";
+    self.namePlaceholder = @"Cardholder's Name";
     self.useInputAccessory = YES;
     
     
@@ -242,6 +244,11 @@
     [self updatePlaceholders];
 }
 
+- (void)setNamePlaceholder:(NSString *)namePlaceholder {
+    _namePlaceholder = namePlaceholder;
+    [self updatePlaceholders];
+}
+
 - (void)setCvcPlaceholder:(NSString *)cvcPlaceholder {
     _cvcPlaceholder = cvcPlaceholder;
     [self updatePlaceholders];
@@ -275,7 +282,7 @@
 
 #pragma mark - 
 - (void)setupBackSide {
-    self.cardNumberTextField.hidden = YES;
+    self.cardNumberTextField.hidden = self.nameTextField.hidden = YES;
     self.lastFourLabel.hidden = self.expirationTextField.hidden = self.cvcTextField.hidden = NO;
     if (self.includeZipCode)
         self.zipTextField.hidden = NO;
@@ -283,14 +290,22 @@
     self.lastFourLabel.text = self.lastFour;
 }
 
-- (void)setupFrontSide {
-    self.lastFourLabel.hidden = self.expirationTextField.hidden = self.cvcTextField.hidden = self.zipTextField.hidden = YES;
+- (void)setupCarNumber {
+    self.lastFourLabel.hidden = self.expirationTextField.hidden = self.cvcTextField.hidden = self.zipTextField.hidden = self.nameTextField.hidden = YES;
     self.cardNumberTextField.hidden = NO;
+}
+
+- (void)setupName {
+    self.lastFourLabel.hidden = self.expirationTextField.hidden = self.cvcTextField.hidden = self.zipTextField.hidden = self.cardNumberTextField.hidden = YES;
+    self.nameTextField.hidden = NO;
 }
 
 #pragma mark - InputAccessory actions
 - (IBAction)next:(id)sender {
-    if (self.activeTextField == self.cardNumberTextField) {
+    if (self.activeTextField == self.nameTextField) {
+        [self setupCarNumber];
+        [self.cardNumberTextField becomeFirstResponder];
+    } else if (self.activeTextField == self.cardNumberTextField) {
         if (![self isValidCardNumber]){
             [self invalidFieldState];
             return;
@@ -307,7 +322,7 @@
 
 - (IBAction)previous:(id)sender {
     if (self.activeTextField == self.expirationTextField) {
-        [self setupFrontSide];
+        [self setupCarNumber];
         [self.cardNumberTextField becomeFirstResponder];
     } else if (self.activeTextField == self.cvcTextField) {
         [self.expirationTextField becomeFirstResponder];
@@ -317,9 +332,10 @@
 }
 
 - (IBAction)done:(id)sender {
-    [self isFormValid];
-    if ([self.delegate respondsToSelector:@selector(formDidBecomeValid)]){
-        [self.delegate formDidBecomeValid];
+    if ([self isFormValid]) {
+        if ([self.delegate respondsToSelector:@selector(formDidBecomeValid)]){
+            [self.delegate formDidBecomeValid];
+        }
     }
 }
 
@@ -549,7 +565,7 @@
 
 - (BOOL)isValidExpiration {
 
-    if ([self.cardMonth integerValue] < 13 && [self.cardMonth integerValue] > 0 && [self.cardYear integerValue] >= self.minYear && [self.cardYear integerValue] <= self.maxYear) {
+    if (self.expirationTextField.text.length == 5 && [self.cardMonth integerValue] < 13 && [self.cardMonth integerValue] > 0 && [self.cardYear integerValue] >= self.minYear && [self.cardYear integerValue] <= self.maxYear) {
         return YES;
     }
     [self invalidFieldState];
@@ -592,6 +608,12 @@
             break;
         case OKCArdTypeMastercard:
             image = [UIImage imageNamed:@"mastercard_icon"];
+            break;
+        case OKCardTypeAmericanExpress:
+            image = [UIImage imageNamed:@"credit_card_icon"];
+            break;
+        case OKCardTypeDiscover:
+            image = [UIImage imageNamed:@"credit_card_icon"];
             break;
         case OKCardTypeUnknown:
             image = [UIImage imageNamed:@"credit_card_icon"];

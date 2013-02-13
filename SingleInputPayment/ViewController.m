@@ -20,6 +20,7 @@
 	// Do any additional setup after loading the view, typically from a nib.
     self.singlePayment.monthPlaceholder = @"мм";
     self.singlePayment.yearPlaceholder = @"гг";
+    self.singlePayment.namePlaceholder = @"Владелец карты";
     self.singlePayment.delegate = self;
     
     self.currentStep.text = @"";
@@ -55,6 +56,11 @@
         default:
             break;
     }
+}
+
+- (void)formDidBecomeValid {
+    UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"Valid Form" message:@"Form is valid!" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil];
+    [av show];
 }
 
 @end

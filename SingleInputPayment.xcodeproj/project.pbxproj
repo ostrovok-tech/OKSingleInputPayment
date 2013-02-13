@@ -7,9 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9420700816C94123003E5B67 /* OKSingleInputPayment.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 9420700716C94123003E5B67 /* OKSingleInputPayment.bundle */; };
-		9420700D16C941D6003E5B67 /* OKSingleInputPayment.m in Sources */ = {isa = PBXBuildFile; fileRef = 9420700916C941D6003E5B67 /* OKSingleInputPayment.m */; };
-		9420700E16C941D6003E5B67 /* CreditCardValidation.m in Sources */ = {isa = PBXBuildFile; fileRef = 9420700C16C941D6003E5B67 /* CreditCardValidation.m */; };
 		946DDCBA16BBFA4400EFDBCF /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 946DDCB916BBFA4400EFDBCF /* UIKit.framework */; };
 		946DDCBC16BBFA4400EFDBCF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 946DDCBB16BBFA4400EFDBCF /* Foundation.framework */; };
 		946DDCBE16BBFA4400EFDBCF /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 946DDCBD16BBFA4400EFDBCF /* CoreGraphics.framework */; };
@@ -26,6 +23,9 @@
 		946DDCE016BBFA4400EFDBCF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 946DDCBB16BBFA4400EFDBCF /* Foundation.framework */; };
 		946DDCE816BBFA4400EFDBCF /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 946DDCE616BBFA4400EFDBCF /* InfoPlist.strings */; };
 		946DDCEB16BBFA4400EFDBCF /* SingleInputPaymentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 946DDCEA16BBFA4400EFDBCF /* SingleInputPaymentTests.m */; };
+		94D09C9916CBCD8E0064F886 /* CreditCardValidation.m in Sources */ = {isa = PBXBuildFile; fileRef = 94D09C9516CBCD8E0064F886 /* CreditCardValidation.m */; };
+		94D09C9A16CBCD8E0064F886 /* OKSingleInputPayment.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 94D09C9616CBCD8E0064F886 /* OKSingleInputPayment.bundle */; };
+		94D09C9B16CBCD8E0064F886 /* OKSingleInputPayment.m in Sources */ = {isa = PBXBuildFile; fileRef = 94D09C9816CBCD8E0064F886 /* OKSingleInputPayment.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,11 +39,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		9420700716C94123003E5B67 /* OKSingleInputPayment.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = OKSingleInputPayment.bundle; path = source/OKSingleInputPayment.bundle; sourceTree = "<group>"; };
-		9420700916C941D6003E5B67 /* OKSingleInputPayment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OKSingleInputPayment.m; path = source/OKSingleInputPayment.m; sourceTree = "<group>"; };
-		9420700A16C941D6003E5B67 /* OKSingleInputPayment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OKSingleInputPayment.h; path = source/OKSingleInputPayment.h; sourceTree = "<group>"; };
-		9420700B16C941D6003E5B67 /* CreditCardValidation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CreditCardValidation.h; path = source/CreditCardValidation.h; sourceTree = "<group>"; };
-		9420700C16C941D6003E5B67 /* CreditCardValidation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CreditCardValidation.m; path = source/CreditCardValidation.m; sourceTree = "<group>"; };
 		946DDCB616BBFA4400EFDBCF /* SingleInputPayment.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SingleInputPayment.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		946DDCB916BBFA4400EFDBCF /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		946DDCBB16BBFA4400EFDBCF /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -66,6 +61,11 @@
 		946DDCE716BBFA4400EFDBCF /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		946DDCE916BBFA4400EFDBCF /* SingleInputPaymentTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SingleInputPaymentTests.h; sourceTree = "<group>"; };
 		946DDCEA16BBFA4400EFDBCF /* SingleInputPaymentTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SingleInputPaymentTests.m; sourceTree = "<group>"; };
+		94D09C9416CBCD8E0064F886 /* CreditCardValidation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreditCardValidation.h; sourceTree = "<group>"; };
+		94D09C9516CBCD8E0064F886 /* CreditCardValidation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CreditCardValidation.m; sourceTree = "<group>"; };
+		94D09C9616CBCD8E0064F886 /* OKSingleInputPayment.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = OKSingleInputPayment.bundle; sourceTree = "<group>"; };
+		94D09C9716CBCD8E0064F886 /* OKSingleInputPayment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKSingleInputPayment.h; sourceTree = "<group>"; };
+		94D09C9816CBCD8E0064F886 /* OKSingleInputPayment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKSingleInputPayment.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,18 +92,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		941CB82816C3BAA500F258FE /* Source */ = {
-			isa = PBXGroup;
-			children = (
-				9420700916C941D6003E5B67 /* OKSingleInputPayment.m */,
-				9420700A16C941D6003E5B67 /* OKSingleInputPayment.h */,
-				9420700B16C941D6003E5B67 /* CreditCardValidation.h */,
-				9420700C16C941D6003E5B67 /* CreditCardValidation.m */,
-				9420700716C94123003E5B67 /* OKSingleInputPayment.bundle */,
-			);
-			name = Source;
-			sourceTree = "<group>";
-		};
 		946DDCAD16BBFA4400EFDBCF = {
 			isa = PBXGroup;
 			children = (
@@ -137,7 +125,7 @@
 		946DDCBF16BBFA4400EFDBCF /* SingleInputPayment */ = {
 			isa = PBXGroup;
 			children = (
-				941CB82816C3BAA500F258FE /* Source */,
+				94D09C9316CBCD8E0064F886 /* src */,
 				946DDD0D16C1486F00EFDBCF /* Assets */,
 				946DDCC816BBFA4400EFDBCF /* AppDelegate.h */,
 				946DDCC916BBFA4400EFDBCF /* AppDelegate.m */,
@@ -188,6 +176,18 @@
 			);
 			name = Assets;
 			sourceTree = "<group>";
+		};
+		94D09C9316CBCD8E0064F886 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				94D09C9416CBCD8E0064F886 /* CreditCardValidation.h */,
+				94D09C9516CBCD8E0064F886 /* CreditCardValidation.m */,
+				94D09C9616CBCD8E0064F886 /* OKSingleInputPayment.bundle */,
+				94D09C9716CBCD8E0064F886 /* OKSingleInputPayment.h */,
+				94D09C9816CBCD8E0064F886 /* OKSingleInputPayment.m */,
+			);
+			path = src;
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
@@ -265,7 +265,7 @@
 				946DDCCE16BBFA4400EFDBCF /* Default@2x.png in Resources */,
 				946DDCD016BBFA4400EFDBCF /* Default-568h@2x.png in Resources */,
 				946DDCD316BBFA4400EFDBCF /* MainStoryboard.storyboard in Resources */,
-				9420700816C94123003E5B67 /* OKSingleInputPayment.bundle in Resources */,
+				94D09C9A16CBCD8E0064F886 /* OKSingleInputPayment.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -303,8 +303,8 @@
 				946DDCC616BBFA4400EFDBCF /* main.m in Sources */,
 				946DDCCA16BBFA4400EFDBCF /* AppDelegate.m in Sources */,
 				946DDCD616BBFA4400EFDBCF /* ViewController.m in Sources */,
-				9420700D16C941D6003E5B67 /* OKSingleInputPayment.m in Sources */,
-				9420700E16C941D6003E5B67 /* CreditCardValidation.m in Sources */,
+				94D09C9916CBCD8E0064F886 /* CreditCardValidation.m in Sources */,
+				94D09C9B16CBCD8E0064F886 /* OKSingleInputPayment.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

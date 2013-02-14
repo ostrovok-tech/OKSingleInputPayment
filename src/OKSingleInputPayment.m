@@ -125,14 +125,14 @@ The following expression can be used to validate against all card types, regardl
     self.minYear = [[formatter stringFromDate:date] integerValue];
     self.maxYear = [[formatter stringFromDate:future] integerValue];
        
-    UIImage *background = [[UIImage imageNamed:@"field_cell"] resizableImageWithCapInsets:(UIEdgeInsetsMake(10.0, 10.0, 10.0, 10.0))];
+    UIImage *background = [[UIImage imageNamed:@"OKSingleInputPayment.bundle/field_cell"] resizableImageWithCapInsets:(UIEdgeInsetsMake(10.0, 10.0, 10.0, 10.0))];
     UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.bounds];
     imageView.image = background;
     self.containerView = imageView;
     [self addSubview:self.containerView];
     
     
-    self.leftCardView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"credit_card_icon"]];
+    self.leftCardView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"OKSingleInputPayment.bundle/credit_card_icon"]];
     self.leftCardView.backgroundColor = [UIColor blueColor];
     [self.leftCardView setFrame:CGRectMake(10, (self.frame.size.height / 2) - (self.leftCardView.frame.size.height/2), self.leftCardView.frame.size.width, self.leftCardView.frame.size.height)];
     
@@ -693,22 +693,22 @@ The following expression can be used to validate against all card types, regardl
     UIImage *image;
     switch (cardType) {
         case OKCardTypeVisa:
-            image = [UIImage imageNamed:@"visa_icon"];
+            image = [UIImage imageNamed:@"OKSingleInputPayment.bundle/visa_icon"];
             break;
         case OKCArdTypeMastercard:
-            image = [UIImage imageNamed:@"mastercard_icon"];
+            image = [UIImage imageNamed:@"OKSingleInputPayment.bundle/mastercard_icon"];
             break;
         case OKCardTypeAmericanExpress:
-            image = [UIImage imageNamed:@"amex_icon"];
+            image = [UIImage imageNamed:@"OKSingleInputPayment.bundle/amex_icon"];
             break;
         case OKCardTypeDiscover:
-            image = [UIImage imageNamed:@"discover_icon"];
+            image = [UIImage imageNamed:@"OKSingleInputPayment.bundle/discover_icon"];
             break;
         case OKCardTypeUnknown:
-            image = [UIImage imageNamed:@"credit_card_icon"];
+            image = [UIImage imageNamed:@"OKSingleInputPayment.bundle/credit_card_icon"];
             break;
         case OKCardTypeCvc:
-            image = [UIImage imageNamed:@"cvc_icon"];
+            image = [UIImage imageNamed:@"OKSingleInputPayment.bundle/cvc_icon"];
             break;
         default:
             break;
@@ -751,14 +751,14 @@ The following expression can be used to validate against all card types, regardl
 
 #pragma mark - Field styles
 - (void)invalidFieldState {
-    self.containerView.image = [[UIImage imageNamed:@"field_cell_error"] resizableImageWithCapInsets:(UIEdgeInsetsMake(10.0, 10.0, 10.0, 10.0))];
+    self.containerView.image = [[UIImage imageNamed:@"OKSingleInputPayment.bundle/field_cell_error"] resizableImageWithCapInsets:(UIEdgeInsetsMake(10.0, 10.0, 10.0, 10.0))];
     self.formInvalid = YES;
     [self shakeAnimation:self.activeTextField.textInputView];
     self.activeTextField.textColor = [UIColor redColor];
 }
 
 - (void)resetFieldState {
-    self.containerView.image = [[UIImage imageNamed:@"field_cell"] resizableImageWithCapInsets:(UIEdgeInsetsMake(10.0, 10.0, 10.0, 10.0))];
+    self.containerView.image = [[UIImage imageNamed:@"OKSingleInputPayment.bundle/field_cell"] resizableImageWithCapInsets:(UIEdgeInsetsMake(10.0, 10.0, 10.0, 10.0))];
     self.activeTextField.textColor = self.defaultFontColor;
     self.formInvalid = NO;
 }

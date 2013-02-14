@@ -48,8 +48,10 @@ typedef enum {
 @property (strong, readonly) NSString *cardCvc;
 @property (strong, readonly) NSString *cardMonth;
 @property (strong, readonly) NSString *cardYear;
+@property (strong, readonly, getter = getFormattedExpiration) NSString *formattedExpiration;
 @property (strong, readonly) NSString *cardZip;
 @property (strong, readonly) NSString *cardName;
+@property (strong, nonatomic, readonly) UIToolbar *accessoryToolBar;
 
 @property (readonly) BOOL isFormValid;
 
@@ -73,6 +75,12 @@ typedef enum {
  * good way to advance the user's form postion based on input validation
  */
 @property (nonatomic) BOOL includeName;
+
+
+@property (strong, nonatomic) UIBarButtonItem *previousButton;
+@property (strong, nonatomic) UIBarButtonItem *nextButton;
+@property (strong, nonatomic) UIBarButtonItem *doneButton;
+
 
 @property (strong, nonatomic) NSString *cvcPlaceholder;
 @property (strong, nonatomic) NSString *zipPlaceholder;

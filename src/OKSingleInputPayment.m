@@ -60,7 +60,6 @@ The following expression can be used to validate against all card types, regardl
 
 @property BOOL formInvalid;
 
-@property (strong, nonatomic) UIToolbar *accessoryToolBar;
 
 @end
 
@@ -154,7 +153,7 @@ The following expression can be used to validate against all card types, regardl
     self.nameTextField.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForCardNumber];
     self.nameTextField.delegate = self;
     self.nameTextField.adjustsFontSizeToFitWidth = YES;
-    self.nameTextField.keyboardType = UIKeyboardTypeNumberPad;
+    self.nameTextField.keyboardType = UIKeyboardTypeAlphabet;
     self.nameTextField.backgroundColor = [UIColor clearColor];
     self.nameTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     self.nameTextField.inputAccessoryView = self.accessoryToolBar;
@@ -298,13 +297,17 @@ The following expression can be used to validate against all card types, regardl
     if (includeName) {
         [self setupName];
     } else {
-        [self setupCarNumber];
+        [self setupCardNumber];
     }
 }
 
 - (void)setDefaultFont:(UIFont *)defaultFont {
     _defaultFont = defaultFont;
     [self updateDefaultFonts];
+}
+
+- (NSString *)getFormattedExpiration {
+    return [NSString stringWithFormat:@"%@%@%@", self.cardMonth, self.monthYearSeparator, self.cardYear];
 }
 
 - (void)updateDefaultFonts {
@@ -330,7 +333,7 @@ The following expression can be used to validate against all card types, regardl
     self.lastFourLabel.text = self.lastFour;
 }
 
-- (void)setupCarNumber {
+- (void)setupCardNumber {
     self.lastFourLabel.hidden = self.expirationTextField.hidden = self.cvcTextField.hidden = self.zipTextField.hidden = self.nameTextField.hidden = YES;
     self.cardNumberTextField.hidden = NO;
 }
@@ -343,7 +346,7 @@ The following expression can be used to validate against all card types, regardl
 #pragma mark - InputAccessory actions
 - (IBAction)next:(id)sender {
     if (self.activeTextField == self.nameTextField) {
-        [self setupCarNumber];
+        [self setupCardNumber];
         [self.cardNumberTextField becomeFirstResponder];
     } else if (self.activeTextField == self.cardNumberTextField) {
         if (![self isValidCardNumber]){
@@ -365,7 +368,7 @@ The following expression can be used to validate against all card types, regardl
         [self setupName];
         [self.nameTextField becomeFirstResponder];
     }else if (self.activeTextField == self.expirationTextField) {
-        [self setupCarNumber];
+        [self setupCardNumber];
         [self.cardNumberTextField becomeFirstResponder];
     } else if (self.activeTextField == self.cvcTextField) {
         [self.expirationTextField becomeFirstResponder];
@@ -383,13 +386,13 @@ The following expression can be used to validate against all card types, regardl
 }
 
 - (void)setupAccessoryToolbar {
-    self.accessoryToolBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, 44)];
-    UIBarButtonItem *previousButton = [[UIBarButtonItem alloc] initWithTitle:@"Previous" style:UIBarButtonItemStyleBordered target:self action:@selector(previous:)];
-    UIBarButtonItem *nextButton = [[UIBarButtonItem alloc] initWithTitle:@"Next" style:UIBarButtonItemStyleBordered target:self action:@selector(next:)];
+    _accessoryToolBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, 44)];
+    self.previousButton = [[UIBarButtonItem alloc] initWithTitle:@"Previous" style:UIBarButtonItemStyleBordered target:self action:@selector(previous:)];
+    self.nextButton = [[UIBarButtonItem alloc] initWithTitle:@"Next" style:UIBarButtonItemStyleBordered target:self action:@selector(next:)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     
-    UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done:)];
-    self.accessoryToolBar.items = @[previousButton, nextButton, flexibleSpace, doneButton];
+    self.doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done:)];
+    self.accessoryToolBar.items = @[self.previousButton, self.nextButton, flexibleSpace, self.doneButton];
     self.cardNumberTextField.inputAccessoryView = self.expirationTextField.inputAccessoryView = self.cvcTextField.inputAccessoryView = self.zipTextField.inputAccessoryView = self.accessoryToolBar;
 
 }
@@ -587,22 +590,27 @@ The following expression can be used to validate against all card types, regardl
 #pragma mark - Validation methods
 - (BOOL)isFormValid {
     if (![self isValidExpiration]) {
+        [self setupBackSide];
         [self.expirationTextField becomeFirstResponder];
         [self invalidFieldState];
         return NO;
     }else if (![self isValidCvc]) {
+        [self setupBackSide];
         [self.cvcTextField becomeFirstResponder];
         [self invalidFieldState];
         return NO;
     } else if (self.includeZipCode && ![self isValidZip]) {
+        [self setupBackSide];
         [self.zipTextField becomeFirstResponder];
         [self invalidFieldState];
         return NO;
     } else if (![self isValidCardNumber]) {
+        [self setupCardNumber];
         [self.cardNumberTextField becomeFirstResponder];
         [self invalidFieldState];
         return NO;
     } else if (![self isValidName]) {
+        [self setupName];
         [self.nameTextField becomeFirstResponder];
         [self invalidFieldState];
         return NO;

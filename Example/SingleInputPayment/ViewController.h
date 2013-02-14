@@ -15,5 +15,8 @@
 @property (weak, nonatomic) IBOutlet OKSingleInputPayment *singlePayment;
 @property (weak, nonatomic) IBOutlet UILabel *cardNumber;
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
+@property (weak, nonatomic) IBOutlet UILabel *expLabel;
+@property (weak, nonatomic) IBOutlet UILabel *cvcLabel;
+@property (weak, nonatomic) IBOutlet UILabel *zipcodeLabel;
 
 @end

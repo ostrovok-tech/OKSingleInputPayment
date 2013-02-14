@@ -27,6 +27,9 @@
     self.singlePayment.includeZipCode = NO;
     self.singlePayment.includeName = YES;
     self.singlePayment.defaultFont = [UIFont fontWithName:@"Copperplate" size:28];
+    self.singlePayment.previousButton.title = NSLocalizedString(@"назад", @"Move to the previous input");
+    self.singlePayment.nextButton.title = NSLocalizedString(@"вперед", @"Move to the next input");
+    self.singlePayment.doneButton.title = NSLocalizedString(@"Готово", @"Form is finished button");
     //OKSingleInputPayment *inputField = [[OKSingleInputPayment alloc] initWithFrame:CGRectMake(20, 120, 280, 50)];
     //[self.view addSubview:inputField];
 
@@ -42,6 +45,9 @@
 
 - (void)didChangePaymentStep:(OKPaymentStep)paymentStep {
     switch (paymentStep) {
+        case OKPaymentStepName:
+            self.currentStep.text = @"Cardholder's name";
+            break;
         case OKPaymentStepCCNumber:
             self.currentStep.text = @"CC Number";
             break;
@@ -64,6 +70,9 @@
     [av show];
     self.nameLabel.text = self.singlePayment.cardName;
     self.cardNumber.text = self.singlePayment.cardNumber;
+    self.expLabel.text = self.singlePayment.formattedExpiration;
+    self.cvcLabel.text = self.singlePayment.cardCvc;
+    self.zipcodeLabel.text = self.singlePayment.cardZip;
 }
 
 @end

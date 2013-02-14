@@ -9,6 +9,6 @@ Pod::Spec.new do |s|
   s.source       = { :git => "git://github.com/ostrovok-team/single-input-payment.git", :tag => "0.0.1" }
   s.platform     = :ios, '5.0'
   s.source_files = src/*.{h,m}'
-  s.resource     =  'src/OKSingleInput.bundle'
+  s.resource     =  'src/OKSingleInputPayment.bundle'
   s.requires_arc = true
 end

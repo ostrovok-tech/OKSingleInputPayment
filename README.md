@@ -58,6 +58,11 @@ Drag a UIView into your scene and add the custom class OKSingleInputPayment, wir
  */
 @property (nonatomic) BOOL includeName;
 
+// UIToolbar buttons for availible for customization
+@property (strong, nonatomic) UIBarButtonItem *previousButton;
+@property (strong, nonatomic) UIBarButtonItem *nextButton;
+@property (strong, nonatomic) UIBarButtonItem *doneButton;
+
 @property (strong, nonatomic) NSString *cvcPlaceholder;
 @property (strong, nonatomic) NSString *zipPlaceholder;
 @property (strong, nonatomic) NSString *numberPlaceholder;
@@ -72,12 +77,19 @@ Drag a UIView into your scene and add the custom class OKSingleInputPayment, wir
 
 ## Readable properties
 ```objective-c
+@property (strong, readonly) NSString *cardName;
 @property (strong, readonly) NSString *cardNumber;
 @property (strong, readonly) NSString *cardCvc;
 @property (strong, readonly) NSString *cardMonth;
 @property (strong, readonly) NSString *cardYear;
 @property (strong, readonly) NSString *cardZip;
 @property (readonly) OKCardType cardType;
+
+// Formatted version of the expiration eg "12/18"
+@property (strong, readonly, getter = getFormattedExpiration) NSString *formattedExpiration;
+// The UIToolbar used for the input accessory view
+@property (strong, nonatomic, readonly) UIToolbar *accessoryToolBar;
+
 ```
 
 ## Optional OKSingleInputPaymentDelegate delegate methods 

@@ -6,6 +6,23 @@
 //  Copyright (c) 2013 Ryan Romanchuk. All rights reserved.
 //
 
+/*
+Using a regular expression like the ones below: Credit for original expressions
+
+Visa: ^4[0-9]{12}(?:[0-9]{3})?$ Visa card numbers start with a 4. New cards have 16 digits. Old cards have 13.
+
+MasterCard: ^5[1-5][0-9]{14}$ MasterCard numbers start with the numbers 51 through 55. All have 16 digits.
+
+American Express: ^3[47][0-9]{13}$ American Express card numbers start with 34 or 37 and have 15 digits.
+
+Diners Club: ^3(?:0[0-5]|[68][0-9])[0-9]{11}$ Diners Club card numbers begin with 300 through 305, 36 or 38. All have 14 digits. There are Diners Club cards that begin with 5 and have 16 digits. These are a joint venture between Diners Club and MasterCard, and should be processed like a MasterCard.
+
+Discover: ^6(?:011|5[0-9]{2})[0-9]{12}$ Discover card numbers begin with 6011 or 65. All have 16 digits.
+
+JCB: ^(?:2131|1800|35\d{3})\d{11}$ JCB cards beginning with 2131 or 1800 have 15 digits. JCB cards beginning with 35 have 16 digits.
+The following expression can be used to validate against all card types, regardless of brand:
+*/
+
 #import "OKSingleInputPayment.h"
 #import "CreditCardValidation.h"
 
@@ -431,6 +448,12 @@
             } else if ([string isEqualToString:@"5"]) {
                 [self animateLeftView:OKCArdTypeMastercard];
                 _cardType = OKCArdTypeMastercard;
+            } else if ([string isEqualToString:@"3"]) {
+                [self animateLeftView:OKCardTypeAmericanExpress];
+                _cardType = OKCardTypeAmericanExpress;
+            } else if ([string isEqualToString:@"6"]) {
+                [self animateLeftView:OKCardTypeDiscover];
+                _cardType = OKCardTypeDiscover;
             } else {
                 [self animateLeftView:OKCardTypeUnknown];
                 _cardType = OKCardTypeUnknown;
@@ -540,6 +563,12 @@
         if ((self.trimmedNumber.length > 12 && self.trimmedNumber.length < 20) && [self isValidCardNumber]) {
             [self next:self];
         }
+    } else if (self.cardType == OKCardTypeAmericanExpress) {
+        if (self.trimmedNumber.length == 15 && [self isValidCardNumber])
+            [self next:self];
+    } else if (self.cardType == OKCardTypeDiscover) {
+        if (self.trimmedNumber.length == 16 && [self isValidCardNumber])
+            [self next:self];
     } else if ([self isValidCardNumber]) {
         [self next:self];
     }
@@ -596,6 +625,16 @@
         }
     } else if (self.cardType == OKCArdTypeMastercard) {
         if (![CreditCardValidation validateCard:self.trimmedNumber]) {
+            [self invalidFieldState];
+            return NO;
+        }
+    } else if (self.cardType == OKCardTypeAmericanExpress) {
+        if (self.trimmedNumber.length == 15 && ![CreditCardValidation validateCard:self.trimmedNumber]) {
+            [self invalidFieldState];
+            return NO;
+        }
+    } else if (self.cardType == OKCardTypeDiscover) {
+        if (self.trimmedNumber.length == 16 && ![CreditCardValidation validateCard:self.trimmedNumber]) {
             [self invalidFieldState];
             return NO;
         }
@@ -660,10 +699,10 @@
             image = [UIImage imageNamed:@"mastercard_icon"];
             break;
         case OKCardTypeAmericanExpress:
-            image = [UIImage imageNamed:@"credit_card_icon"];
+            image = [UIImage imageNamed:@"amex_icon"];
             break;
         case OKCardTypeDiscover:
-            image = [UIImage imageNamed:@"credit_card_icon"];
+            image = [UIImage imageNamed:@"discover_icon"];
             break;
         case OKCardTypeUnknown:
             image = [UIImage imageNamed:@"credit_card_icon"];

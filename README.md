@@ -1,9 +1,13 @@
 single-input-payment
 ====================
 
-A customizable implementation of Square's single input payment for iOS. 
+A customizable implementation of Square's single input payment for iOS.
 
 
+![Screen 1](https://s3.amazonaws.com/rromanchuk/singleInput/single_input1.png "Optional cardholder's name")
+![Screen 2](https://s3.amazonaws.com/rromanchuk/singleInput/single_input2.png "Optional cardholder's name")
+![Screen 3](https://s3.amazonaws.com/rromanchuk/singleInput/single_input3.png "Optional cardholder's name")
+![Screen 4](https://s3.amazonaws.com/rromanchuk/singleInput/single_input4.png "Optional cardholder's name")
 ## Usage
 ### Using without storyboard
 ```objective-c

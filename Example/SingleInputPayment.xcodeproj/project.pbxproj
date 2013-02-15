@@ -23,9 +23,13 @@
 		946DDCE016BBFA4400EFDBCF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 946DDCBB16BBFA4400EFDBCF /* Foundation.framework */; };
 		946DDCE816BBFA4400EFDBCF /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 946DDCE616BBFA4400EFDBCF /* InfoPlist.strings */; };
 		946DDCEB16BBFA4400EFDBCF /* SingleInputPaymentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 946DDCEA16BBFA4400EFDBCF /* SingleInputPaymentTests.m */; };
-		9484987D16CCEF1D000083DE /* CreditCardValidation.m in Sources */ = {isa = PBXBuildFile; fileRef = 9484987916CCEF1D000083DE /* CreditCardValidation.m */; };
 		9484987E16CCEF1D000083DE /* OKSingleInputPayment.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 9484987A16CCEF1D000083DE /* OKSingleInputPayment.bundle */; };
 		9484987F16CCEF1D000083DE /* OKSingleInputPayment.m in Sources */ = {isa = PBXBuildFile; fileRef = 9484987C16CCEF1D000083DE /* OKSingleInputPayment.m */; };
+		9484988416CD1248000083DE /* photo-accept.png in Resources */ = {isa = PBXBuildFile; fileRef = 9484988016CD1248000083DE /* photo-accept.png */; };
+		9484988516CD1248000083DE /* photo-accept@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9484988116CD1248000083DE /* photo-accept@2x.png */; };
+		9484988616CD1248000083DE /* photo-reject.png in Resources */ = {isa = PBXBuildFile; fileRef = 9484988216CD1248000083DE /* photo-reject.png */; };
+		9484988716CD1248000083DE /* photo-reject@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9484988316CD1248000083DE /* photo-reject@2x.png */; };
+		948498B316CE2EFE000083DE /* NSString+CCValidation.m in Sources */ = {isa = PBXBuildFile; fileRef = 948498B216CE2EFE000083DE /* NSString+CCValidation.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,11 +65,15 @@
 		946DDCE716BBFA4400EFDBCF /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		946DDCE916BBFA4400EFDBCF /* SingleInputPaymentTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SingleInputPaymentTests.h; sourceTree = "<group>"; };
 		946DDCEA16BBFA4400EFDBCF /* SingleInputPaymentTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SingleInputPaymentTests.m; sourceTree = "<group>"; };
-		9484987816CCEF1D000083DE /* CreditCardValidation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreditCardValidation.h; sourceTree = "<group>"; };
-		9484987916CCEF1D000083DE /* CreditCardValidation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CreditCardValidation.m; sourceTree = "<group>"; };
 		9484987A16CCEF1D000083DE /* OKSingleInputPayment.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = OKSingleInputPayment.bundle; sourceTree = "<group>"; };
 		9484987B16CCEF1D000083DE /* OKSingleInputPayment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKSingleInputPayment.h; sourceTree = "<group>"; };
 		9484987C16CCEF1D000083DE /* OKSingleInputPayment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKSingleInputPayment.m; sourceTree = "<group>"; };
+		9484988016CD1248000083DE /* photo-accept.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "photo-accept.png"; path = "assets/photo-accept.png"; sourceTree = "<group>"; };
+		9484988116CD1248000083DE /* photo-accept@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "photo-accept@2x.png"; path = "assets/photo-accept@2x.png"; sourceTree = "<group>"; };
+		9484988216CD1248000083DE /* photo-reject.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "photo-reject.png"; path = "assets/photo-reject.png"; sourceTree = "<group>"; };
+		9484988316CD1248000083DE /* photo-reject@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "photo-reject@2x.png"; path = "assets/photo-reject@2x.png"; sourceTree = "<group>"; };
+		948498B116CE2EFD000083DE /* NSString+CCValidation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+CCValidation.h"; sourceTree = "<group>"; };
+		948498B216CE2EFE000083DE /* NSString+CCValidation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+CCValidation.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -173,6 +181,10 @@
 		946DDD0D16C1486F00EFDBCF /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				9484988016CD1248000083DE /* photo-accept.png */,
+				9484988116CD1248000083DE /* photo-accept@2x.png */,
+				9484988216CD1248000083DE /* photo-reject.png */,
+				9484988316CD1248000083DE /* photo-reject@2x.png */,
 			);
 			name = Assets;
 			sourceTree = "<group>";
@@ -180,11 +192,11 @@
 		9484987716CCEF1D000083DE /* src */ = {
 			isa = PBXGroup;
 			children = (
-				9484987816CCEF1D000083DE /* CreditCardValidation.h */,
-				9484987916CCEF1D000083DE /* CreditCardValidation.m */,
 				9484987A16CCEF1D000083DE /* OKSingleInputPayment.bundle */,
 				9484987B16CCEF1D000083DE /* OKSingleInputPayment.h */,
 				9484987C16CCEF1D000083DE /* OKSingleInputPayment.m */,
+				948498B116CE2EFD000083DE /* NSString+CCValidation.h */,
+				948498B216CE2EFE000083DE /* NSString+CCValidation.m */,
 			);
 			name = src;
 			path = ../../src;
@@ -267,6 +279,10 @@
 				946DDCD016BBFA4400EFDBCF /* Default-568h@2x.png in Resources */,
 				946DDCD316BBFA4400EFDBCF /* MainStoryboard.storyboard in Resources */,
 				9484987E16CCEF1D000083DE /* OKSingleInputPayment.bundle in Resources */,
+				9484988416CD1248000083DE /* photo-accept.png in Resources */,
+				9484988516CD1248000083DE /* photo-accept@2x.png in Resources */,
+				9484988616CD1248000083DE /* photo-reject.png in Resources */,
+				9484988716CD1248000083DE /* photo-reject@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -304,8 +320,8 @@
 				946DDCC616BBFA4400EFDBCF /* main.m in Sources */,
 				946DDCCA16BBFA4400EFDBCF /* AppDelegate.m in Sources */,
 				946DDCD616BBFA4400EFDBCF /* ViewController.m in Sources */,
-				9484987D16CCEF1D000083DE /* CreditCardValidation.m in Sources */,
 				9484987F16CCEF1D000083DE /* OKSingleInputPayment.m in Sources */,
+				948498B316CE2EFE000083DE /* NSString+CCValidation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

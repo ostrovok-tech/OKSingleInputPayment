@@ -24,7 +24,7 @@ The following expression can be used to validate against all card types, regardl
 */
 
 #import "OKSingleInputPayment.h"
-#import "CreditCardValidation.h"
+#import "NSString+CCValidation.h"
 
 @interface OKSingleInputPayment() {
     CGFloat maximumFontForCardNumber;
@@ -625,24 +625,24 @@ The following expression can be used to validate against all card types, regardl
         [self invalidFieldState];
         return NO;
     } else if ( self.cardType == OKCardTypeVisa) {
-        if (self.trimmedNumber.length == 16 && ![CreditCardValidation validateCard:self.trimmedNumber]) {
+        if (self.trimmedNumber.length == 16 && ![self.trimmedNumber luhnCheck]) {
             [self invalidFieldState];
             return NO;
-        } else if (![CreditCardValidation validateCard:self.trimmedNumber]) {
+        } else if (![self.trimmedNumber luhnCheck]) {
             return NO;
         }
     } else if (self.cardType == OKCArdTypeMastercard) {
-        if (![CreditCardValidation validateCard:self.trimmedNumber]) {
+        if (![self.trimmedNumber luhnCheck]) {
             [self invalidFieldState];
             return NO;
         }
     } else if (self.cardType == OKCardTypeAmericanExpress) {
-        if (self.trimmedNumber.length == 15 && ![CreditCardValidation validateCard:self.trimmedNumber]) {
+        if (self.trimmedNumber.length == 15 && ![self.trimmedNumber luhnCheck]) {
             [self invalidFieldState];
             return NO;
         }
     } else if (self.cardType == OKCardTypeDiscover) {
-        if (self.trimmedNumber.length == 16 && ![CreditCardValidation validateCard:self.trimmedNumber]) {
+        if (self.trimmedNumber.length == 16 && ![self.trimmedNumber luhnCheck]) {
             [self invalidFieldState];
             return NO;
         }
@@ -770,6 +770,5 @@ The following expression can be used to validate against all card types, regardl
     self.activeTextField.textColor = self.defaultFontColor;
     self.formInvalid = NO;
 }
-
 
 @end

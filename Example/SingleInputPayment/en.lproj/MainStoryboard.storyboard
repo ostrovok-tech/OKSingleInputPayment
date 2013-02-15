@@ -48,24 +48,28 @@
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="exp" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="yIU-kI-Ixq">
                                 <rect key="frame" x="20" y="167" width="56" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="cvc" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="OZM-MN-1m5">
-                                <rect key="frame" x="77" y="167" width="42" height="21"/>
+                                <rect key="frame" x="66" y="167" width="42" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="zipcode" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="adM-Wb-p95">
                                 <rect key="frame" x="116" y="167" width="68" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="photo-reject.png" id="x8y-xT-jY0">
+                                <rect key="frame" x="197" y="138" width="83" height="39"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
@@ -76,6 +80,7 @@
                         <outlet property="expLabel" destination="yIU-kI-Ixq" id="hjx-Kv-GPO"/>
                         <outlet property="nameLabel" destination="7im-gt-Sno" id="a6d-pu-nEW"/>
                         <outlet property="singlePayment" destination="l6m-sl-Yqs" id="0i5-po-T8n"/>
+                        <outlet property="statusImage" destination="x8y-xT-jY0" id="qsN-FR-95B"/>
                         <outlet property="zipcodeLabel" destination="adM-Wb-p95" id="pwd-fZ-ACa"/>
                     </connections>
                 </viewController>
@@ -83,28 +88,9 @@
             </objects>
         </scene>
     </scenes>
-    <classes>
-        <class className="OKSingleInputPayment" superclassName="UIView">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/OKSingleInputPayment.h"/>
-            <relationships>
-                <relationship kind="action" name="done:"/>
-                <relationship kind="action" name="next:"/>
-                <relationship kind="action" name="previous:"/>
-            </relationships>
-        </class>
-        <class className="ViewController" superclassName="UIViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/ViewController.h"/>
-            <relationships>
-                <relationship kind="outlet" name="cardNumber" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="currentStep" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="cvcLabel" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="expLabel" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="nameLabel" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="singlePayment" candidateClass="OKSingleInputPayment"/>
-                <relationship kind="outlet" name="zipcodeLabel" candidateClass="UILabel"/>
-            </relationships>
-        </class>
-    </classes>
+    <resources>
+        <image name="photo-reject.png" width="83" height="39"/>
+    </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>

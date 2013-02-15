@@ -18,5 +18,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *expLabel;
 @property (weak, nonatomic) IBOutlet UILabel *cvcLabel;
 @property (weak, nonatomic) IBOutlet UILabel *zipcodeLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *statusImage;
 
 @end

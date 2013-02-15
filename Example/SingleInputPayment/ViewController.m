@@ -26,7 +26,7 @@
     self.currentStep.text = @"";
     self.singlePayment.includeZipCode = NO;
     self.singlePayment.includeName = YES;
-    self.singlePayment.defaultFont = [UIFont fontWithName:@"Copperplate" size:28];
+    self.singlePayment.defaultFont = [UIFont fontWithName:@"Helvetica" size:28];
     self.singlePayment.previousButton.title = NSLocalizedString(@"назад", @"Move to the previous input");
     self.singlePayment.nextButton.title = NSLocalizedString(@"вперед", @"Move to the next input");
     self.singlePayment.doneButton.title = NSLocalizedString(@"Готово", @"Form is finished button");
@@ -73,6 +73,7 @@
     self.expLabel.text = self.singlePayment.formattedExpiration;
     self.cvcLabel.text = self.singlePayment.cardCvc;
     self.zipcodeLabel.text = self.singlePayment.cardZip;
+    self.statusImage.image = [UIImage imageNamed:@"photo-accept"];
 }
 
 @end

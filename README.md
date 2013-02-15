@@ -1,7 +1,7 @@
-single-input-payment
+OKSingleInputPayment
 ====================
 
-A customizable implementation of Square's single input payment for iOS.
+A customizable implementation of Square's single input payment for iOS. A version of a single input for collecting payment information with a single input field. Similar to versions on the web, see Zachary’s implementation and write up  [here](http://www.lukew.com/ff/entry.asp?1667). As I wrote this [@stripe](https://github.com/stripe) created [PaymentKit](https://github.com/stripe/PaymentKit), so be sure to check it out as it might be more polished. 
 
 
 ![Screen 1](https://s3.amazonaws.com/rromanchuk/singleInput/single_input1.png "Optional cardholder's name")

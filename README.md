@@ -1,9 +1,13 @@
-single-input-payment
+OKSingleInputPayment
 ====================
 
-A customizable implementation of Square's single input payment for iOS. 
+A customizable implementation of Square's single input payment for iOS. A version of a single input for collecting payment information with a single input field. Similar to versions on the web, see Zachary’s implementation and write up  [here](http://www.lukew.com/ff/entry.asp?1667). As I wrote this [@stripe](https://github.com/stripe) created [PaymentKit](https://github.com/stripe/PaymentKit), so be sure to check it out as it might be more polished. 
 
 
+![Screen 1](https://s3.amazonaws.com/rromanchuk/singleInput/single_input1.png "Optional cardholder's name")
+![Screen 2](https://s3.amazonaws.com/rromanchuk/singleInput/single_input2.png "Optional cardholder's name")
+![Screen 3](https://s3.amazonaws.com/rromanchuk/singleInput/single_input3.png "Optional cardholder's name")
+![Screen 4](https://s3.amazonaws.com/rromanchuk/singleInput/single_input4.png "Optional cardholder's name")
 ## Usage
 ### Using without storyboard
 ```objective-c
@@ -58,6 +62,11 @@ Drag a UIView into your scene and add the custom class OKSingleInputPayment, wir
  */
 @property (nonatomic) BOOL includeName;
 
+// UIToolbar buttons for availible for customization
+@property (strong, nonatomic) UIBarButtonItem *previousButton;
+@property (strong, nonatomic) UIBarButtonItem *nextButton;
+@property (strong, nonatomic) UIBarButtonItem *doneButton;
+
 @property (strong, nonatomic) NSString *cvcPlaceholder;
 @property (strong, nonatomic) NSString *zipPlaceholder;
 @property (strong, nonatomic) NSString *numberPlaceholder;
@@ -72,12 +81,19 @@ Drag a UIView into your scene and add the custom class OKSingleInputPayment, wir
 
 ## Readable properties
 ```objective-c
+@property (strong, readonly) NSString *cardName;
 @property (strong, readonly) NSString *cardNumber;
 @property (strong, readonly) NSString *cardCvc;
 @property (strong, readonly) NSString *cardMonth;
 @property (strong, readonly) NSString *cardYear;
 @property (strong, readonly) NSString *cardZip;
 @property (readonly) OKCardType cardType;
+
+// Formatted version of the expiration eg "12/18"
+@property (strong, readonly, getter = getFormattedExpiration) NSString *formattedExpiration;
+// The UIToolbar used for the input accessory view
+@property (strong, nonatomic, readonly) UIToolbar *accessoryToolBar;
+
 ```
 
 ## Optional OKSingleInputPaymentDelegate delegate methods 

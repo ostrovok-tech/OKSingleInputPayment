@@ -7,20 +7,19 @@
 //
 
 /*
+ A good reference on detecting credit cards from http://stackoverflow.com/a/72801
+ 
 Using a regular expression like the ones below: Credit for original expressions
 
 Visa: ^4[0-9]{12}(?:[0-9]{3})?$ Visa card numbers start with a 4. New cards have 16 digits. Old cards have 13.
-
 MasterCard: ^5[1-5][0-9]{14}$ MasterCard numbers start with the numbers 51 through 55. All have 16 digits.
-
 American Express: ^3[47][0-9]{13}$ American Express card numbers start with 34 or 37 and have 15 digits.
-
 Diners Club: ^3(?:0[0-5]|[68][0-9])[0-9]{11}$ Diners Club card numbers begin with 300 through 305, 36 or 38. All have 14 digits. There are Diners Club cards that begin with 5 and have 16 digits. These are a joint venture between Diners Club and MasterCard, and should be processed like a MasterCard.
-
 Discover: ^6(?:011|5[0-9]{2})[0-9]{12}$ Discover card numbers begin with 6011 or 65. All have 16 digits.
-
 JCB: ^(?:2131|1800|35\d{3})\d{11}$ JCB cards beginning with 2131 or 1800 have 15 digits. JCB cards beginning with 35 have 16 digits.
-The following expression can be used to validate against all card types, regardless of brand:
+
+The following expression can be used to validate against all card types, regardless of brand: 
+ ^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\d{3})\d{11})$
 */
 
 #import "OKSingleInputPayment.h"
@@ -358,8 +357,17 @@ The following expression can be used to validate against all card types, regardl
     } else if (self.activeTextField == self.expirationTextField) {
         [self.cvcTextField becomeFirstResponder];
     } else if (self.activeTextField == self.cvcTextField) {
-        if (self.includeZipCode)
+        if (self.includeZipCode) {
             [self.zipTextField becomeFirstResponder];
+        } else {
+            if ([self.delegate respondsToSelector:@selector(formDidBecomeValid)] && [self isFormValid]){
+                [self.delegate formDidBecomeValid];
+            }
+        }
+    } else if (self.activeTextField == self.zipTextField && [self isFormValid]) {
+        if ([self.delegate respondsToSelector:@selector(formDidBecomeValid)]){
+            [self.delegate formDidBecomeValid];
+        }
     }
 }
 
@@ -434,6 +442,33 @@ The following expression can be used to validate against all card types, regardl
     self.activeTextField = textField;
 }
 
+// A much smarter card number formatter repurposed from stripe/PaymentKit  
+- (NSString *)formattedCardNumber:(NSString *)number type:(OKCardType)type {
+    NSRegularExpression *regex;
+    
+    if (type == OKCardTypeAmericanExpress) {
+        regex = [NSRegularExpression regularExpressionWithPattern:@"(\\d{1,4})(\\d{1,6})?(\\d{1,5})?" options:0 error:NULL];
+    } else {
+        regex = [NSRegularExpression regularExpressionWithPattern:@"(\\d{1,4})" options:0 error:NULL];
+    }
+    
+    NSArray *matches = [regex matchesInString:number options:0 range:NSMakeRange(0, number.length)];
+    NSMutableArray *result = [NSMutableArray arrayWithCapacity:matches.count];
+    
+    for (NSTextCheckingResult *match in matches) {
+        for (int i=1; i < [match numberOfRanges]; i++) {
+            NSRange range = [match rangeAtIndex:i];
+            
+            if (range.length > 0) {
+                NSString* matchText = [number substringWithRange:range];
+                [result addObject:matchText];
+            }
+        }
+    }
+    
+    return [result componentsJoinedByString:@" "];
+}
+
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
     NSLog(@"Text: %@, replacementString: %@, Length of text %d, location: %d, length: %d", textField.text, string, textField.text.length, range.location, range.length);
     
@@ -444,31 +479,54 @@ The following expression can be used to validate against all card types, regardl
         return NO;
     
     if (self.activeTextField == self.cardNumberTextField) {
-        if (textField.text.length == 0) {
-            if ([string isEqualToString:@"4"]) {
-                [self animateLeftView:OKCardTypeVisa];
-                _cardType = OKCardTypeVisa;
-            } else if ([string isEqualToString:@"5"]) {
-                [self animateLeftView:OKCArdTypeMastercard];
-                _cardType = OKCArdTypeMastercard;
-            } else if ([string isEqualToString:@"3"]) {
-                [self animateLeftView:OKCardTypeAmericanExpress];
-                _cardType = OKCardTypeAmericanExpress;
-            } else if ([string isEqualToString:@"6"]) {
-                [self animateLeftView:OKCardTypeDiscover];
-                _cardType = OKCardTypeDiscover;
-            } else {
-                [self animateLeftView:OKCardTypeUnknown];
+        //if (textField.text.length == 0) {
+            NSString *resultString = [textField.text stringByReplacingCharactersInRange:range withString:string];
+            resultString = [resultString stringByReplacingOccurrencesOfString:@"\\D"
+                                              withString:@""
+                                                 options:NSRegularExpressionSearch
+                                                   range:NSMakeRange(0, resultString.length)];
+            
+                        
+            if (resultString.length < 2) {
                 _cardType = OKCardTypeUnknown;
             }
+            else if (resultString.length > 16)
+                return NO;
+            else {
+                NSString *firstTwo = [resultString substringWithRange:NSMakeRange(0, 2)];
+                
+                int range = [firstTwo integerValue];
+                
+                if (range >= 40 && range <= 49) {
+                    [self animateLeftView:OKCardTypeVisa];
+                    _cardType = OKCardTypeVisa;
+                } else if (range >= 50 && range <= 59) {
+                    [self animateLeftView:OKCArdTypeMastercard];
+                    _cardType = OKCArdTypeMastercard;
+                } else if (range == 34 || range == 37) {
+                    [self animateLeftView:OKCardTypeAmericanExpress];
+                    _cardType = OKCardTypeAmericanExpress;
+                } else if (range == 60 || range == 62 || range == 64 || range == 65) {
+                    [self animateLeftView:OKCardTypeDiscover];
+                    _cardType = OKCardTypeDiscover;
+                } else if (range == 35) {
+                    [self animateLeftView:OKCardTypeUnknown];
+                    _cardType = OKCardTypeUnknown;
+                } else if (range == 30 || range == 36 || range == 38 || range == 39) {
+                    [self animateLeftView:OKCardTypeUnknown];
+                    _cardType = OKCardTypeUnknown;
+                } else {
+                    [self animateLeftView:OKCardTypeUnknown];
+                    _cardType = OKCardTypeUnknown;
+                }
+
+            //}
+            
+            self.cardNumberTextField.text = [self formattedCardNumber:resultString type:_cardType];
+            [self cardNumberTextFieldValueChanged];
+            return NO;
         }
         
-        if ((textField.text.length == 4 || textField.text.length == 9 || textField.text.length == 14) && string.length != 0) {
-            textField.text = [textField.text stringByAppendingFormat:@" %@", string];
-            return NO;
-        } else if (textField.text.length == 19 && ![string isEqualToString:@""]) {
-            return NO;
-        }
     } else if (self.activeTextField == self.expirationTextField) {
         if (textField.text.length == 5 && ![string isEqualToString:@""]) {
             return NO;
@@ -509,6 +567,7 @@ The following expression can be used to validate against all card types, regardl
     return YES;
 }
 
+
 - (void)expirationTextFieldValueChanged {
     if (self.formInvalid)
         [self resetFieldState];
@@ -528,14 +587,9 @@ The following expression can be used to validate against all card types, regardl
     if (self.formInvalid)
         [self resetFieldState];
     
+    _cardCvc = self.cvcTextField.text;
     if (self.cvcTextField.text.length > 2) {
-        _cardCvc = self.cvcTextField.text;
-        if (self.includeZipCode) {
-            [self next:self];
-
-        } else {
-            
-        }
+        [self next:self];
     }
 }
 
@@ -556,7 +610,7 @@ The following expression can be used to validate against all card types, regardl
         [self resetFieldState];
     
     self.trimmedNumber = [self.cardNumberTextField.text stringByReplacingOccurrencesOfString:@" " withString:@""];
-
+    NSLog(@"trimmed NUmber %@", self.trimmedNumber);
     
     if (self.cardType == OKCArdTypeMastercard) {
         if (self.trimmedNumber.length == 16 && [self isValidCardNumber]) {
@@ -572,7 +626,7 @@ The following expression can be used to validate against all card types, regardl
     } else if (self.cardType == OKCardTypeDiscover) {
         if (self.trimmedNumber.length == 16 && [self isValidCardNumber])
             [self next:self];
-    } else if ([self isValidCardNumber]) {
+    } else if (self.cardNumberTextField.text.length > 2 && [self isValidCardNumber]) {
         [self next:self];
     }
     
@@ -589,19 +643,9 @@ The following expression can be used to validate against all card types, regardl
 
 #pragma mark - Validation methods
 - (BOOL)isFormValid {
-    if (![self isValidExpiration]) {
-        [self setupBackSide];
-        [self.expirationTextField becomeFirstResponder];
-        [self invalidFieldState];
-        return NO;
-    }else if (![self isValidCvc]) {
-        [self setupBackSide];
-        [self.cvcTextField becomeFirstResponder];
-        [self invalidFieldState];
-        return NO;
-    } else if (self.includeZipCode && ![self isValidZip]) {
-        [self setupBackSide];
-        [self.zipTextField becomeFirstResponder];
+    if (![self isValidName]) {
+        [self setupName];
+        [self.nameTextField becomeFirstResponder];
         [self invalidFieldState];
         return NO;
     } else if (![self isValidCardNumber]) {
@@ -609,9 +653,19 @@ The following expression can be used to validate against all card types, regardl
         [self.cardNumberTextField becomeFirstResponder];
         [self invalidFieldState];
         return NO;
-    } else if (![self isValidName]) {
-        [self setupName];
-        [self.nameTextField becomeFirstResponder];
+    } else if (![self isValidExpiration]) {
+        [self setupBackSide];
+        [self.expirationTextField becomeFirstResponder];
+        [self invalidFieldState];
+        return NO;
+    } else if (![self isValidCvc]) {
+        [self setupBackSide];
+        [self.cvcTextField becomeFirstResponder];
+        [self invalidFieldState];
+        return NO;
+    } else if (![self isValidZip]) {
+        [self setupBackSide];
+        [self.zipTextField becomeFirstResponder];
         [self invalidFieldState];
         return NO;
     }
@@ -663,7 +717,7 @@ The following expression can be used to validate against all card types, regardl
 }
 
 - (BOOL)isValidZip {
-    if (self.includeZipCode && self.zipTextField.text.length > 5) 
+    if (self.zipTextField.text.length > 5 || !self.includeZipCode)
         return YES;
     
     return NO;

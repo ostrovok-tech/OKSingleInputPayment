@@ -35,12 +35,6 @@
 
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
 #pragma mark OKSingleInputPaymentDelegate methods
 
 - (void)didChangePaymentStep:(OKPaymentStep)paymentStep {
@@ -49,7 +43,7 @@
             self.currentStep.text = @"Cardholder's name";
             break;
         case OKPaymentStepCCNumber:
-            self.currentStep.text = @"CC Number";
+            self.currentStep.text = @"Card Number";
             break;
         case OKPaymentStepExpiration:
             self.currentStep.text = @"Expiration Info";

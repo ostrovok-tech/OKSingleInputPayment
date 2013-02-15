@@ -1,9 +1,9 @@
 OKSingleInputPayment
 ====================
 
-A customizable implementation of Square's single input payment for iOS. There are similar versions of this field built for the web, for an example see Zachary’s implementation and write up [here](http://www.lukew.com/ff/entry.asp?1667). As I wrote this [@stripe](https://github.com/stripe) created [PaymentKit](https://github.com/stripe/PaymentKit), so be sure to check it out as it might be more polished. 
+A customizable implementation of [Square's](http://squareup.com) single input payment for iOS. There are similar versions of this field built for the web, for an example see Zachary’s implementation and write up [here](http://www.lukew.com/ff/entry.asp?1667). As I wrote this [@stripe](https://github.com/stripe) created [PaymentKit](https://github.com/stripe/PaymentKit), so be sure to check it out as it might be more polished. 
 
-This field was designed so it could be easily localized for different regions. Zipcode/Name fields are optional and all placeholder text can be localized. 
+This field was designed so it could be easily localized for different regions. Zipcode/Name fields are optional and all placeholder text can be localized. There is an input accessory view you can optionally turn on which gives users a back/next/right toolbar for navigating the input. This accessory view will be automatically turned on when including the name field as there is no good way to detect when the form should be advanced.
 
 ![Screen 1](https://s3.amazonaws.com/rromanchuk/singleInput/single_input1.png "Optional cardholder's name")
 ![Screen 2](https://s3.amazonaws.com/rromanchuk/singleInput/single_input2.png "Optional cardholder's name")
@@ -40,7 +40,6 @@ Drag a UIView into your scene and add the custom class OKSingleInputPayment, wir
 @end
 
 ```
-
 
 ## Configurable Properties 
 
@@ -107,3 +106,5 @@ Drag a UIView into your scene and add the custom class OKSingleInputPayment, wir
 * Support all types of cards 
 * Allow previous field movement by deletion 
 * Figure out a better way to retreive cardholder's name 
+* DRY up code
+* Use smarter formatters 

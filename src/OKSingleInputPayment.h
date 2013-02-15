@@ -35,6 +35,8 @@ typedef enum {
     OKCArdTypeMastercard,
     OKCardTypeAmericanExpress,
     OKCardTypeDiscover,
+    OKCardTypeJCB,
+    OKCardTypeDinersClub,
     OKCardTypeUnknown,
     OKCardTypeCvc
 } OKCardType;

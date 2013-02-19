@@ -510,11 +510,11 @@ The following expression can be used to validate against all card types, regardl
                     [self animateLeftView:OKCardTypeDiscover];
                     _cardType = OKCardTypeDiscover;
                 } else if (range == 35) {
-                    [self animateLeftView:OKCardTypeUnknown];
-                    _cardType = OKCardTypeUnknown;
+                    [self animateLeftView:OKCardTypeJCB];
+                    _cardType = OKCardTypeJCB;
                 } else if (range == 30 || range == 36 || range == 38 || range == 39) {
-                    [self animateLeftView:OKCardTypeUnknown];
-                    _cardType = OKCardTypeUnknown;
+                    [self animateLeftView:OKCardTypeDinersClub];
+                    _cardType = OKCardTypeDinersClub;
                 } else {
                     [self animateLeftView:OKCardTypeUnknown];
                     _cardType = OKCardTypeUnknown;
@@ -765,6 +765,12 @@ The following expression can be used to validate against all card types, regardl
             break;
         case OKCardTypeDiscover:
             image = [UIImage imageNamed:@"OKSingleInputPayment.bundle/discover_icon"];
+            break;
+        case OKCardTypeDinersClub:
+            image = [UIImage imageNamed:@"OKSingleInputPayment.bundle/diner_icon"];
+            break;
+        case OKCardTypeJCB:
+            image = [UIImage imageNamed:@"OKSingleInputPayment.bundle/jcb_icon"];
             break;
         case OKCardTypeUnknown:
             image = [UIImage imageNamed:@"OKSingleInputPayment.bundle/credit_card_icon"];

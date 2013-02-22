@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "OKSingleInputPayment"
-  s.version      = "0.0.1"
+  s.version      = "0.1.0"
   s.summary      = "A customizable implementation of Square's single input payment for iOS."
   s.homepage     = "http://ostrovok.ru"
   s.license      = 'MIT'

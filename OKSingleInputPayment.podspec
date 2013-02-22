@@ -6,9 +6,9 @@ Pod::Spec.new do |s|
   s.license      = 'MIT'
   
   s.author       = { "Ryan Romanchuk" => "rromanchuk@gmail.com" }
-  s.source       = { :git => "git://github.com/ostrovok-team/single-input-payment.git", :tag => "0.0.1" }
+  s.source       = { :git => "https://github.com/ostrovok-team/OKSingleInputPayment.git", :tag => "0.1.0" }
   s.platform     = :ios, '5.0'
-  s.source_files = src/*.{h,m}'
+  s.source_files = 'src/*.{h,m}'
   s.resource     =  'src/OKSingleInputPayment.bundle'
   s.requires_arc = true
 end

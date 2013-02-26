@@ -83,6 +83,8 @@ typedef enum {
 @property (strong, nonatomic) UIBarButtonItem *nextButton;
 @property (strong, nonatomic) UIBarButtonItem *doneButton;
 @property (strong, nonatomic) UIImageView *containerView;
+@property (strong, nonatomic) UIImage *containerBGImage;
+@property (strong, nonatomic) UIImage *containerErrorImage;
 
 
 @property (strong, nonatomic) NSString *cvcPlaceholder;

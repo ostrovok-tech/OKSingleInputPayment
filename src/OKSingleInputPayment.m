@@ -49,7 +49,6 @@ The following expression can be used to validate against all card types, regardl
 @property NSInteger maxYear;
 
 @property (strong, nonatomic) UIImageView *leftCardView;
-
 @property (strong, nonatomic) UITextField *activeTextField;
 
 
@@ -121,9 +120,10 @@ The following expression can be used to validate against all card types, regardl
     self.minYear = [[formatter stringFromDate:date] integerValue];
     self.maxYear = [[formatter stringFromDate:future] integerValue];
        
-    UIImage *background = [[UIImage imageNamed:@"OKSingleInputPayment.bundle/field_cell"] resizableImageWithCapInsets:(UIEdgeInsetsMake(10.0, 10.0, 10.0, 10.0))];
+    self.containerBGImage = [[UIImage imageNamed:@"OKSingleInputPayment.bundle/field_cell"] resizableImageWithCapInsets:(UIEdgeInsetsMake(10.0, 10.0, 10.0, 10.0))];
+    self.containerErrorImage = [[UIImage imageNamed:@"OKSingleInputPayment.bundle/field_cell_error"] resizableImageWithCapInsets:(UIEdgeInsetsMake(10.0, 10.0, 10.0, 10.0))];
     UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.bounds];
-    imageView.image = background;
+    imageView.image = self.containerBGImage;
     self.containerView = imageView;
     self.backgroundColor = [UIColor clearColor];
     self.containerView.backgroundColor = [UIColor clearColor];
@@ -819,14 +819,14 @@ The following expression can be used to validate against all card types, regardl
 
 #pragma mark - Field styles
 - (void)invalidFieldState {
-    self.containerView.image = [[UIImage imageNamed:@"OKSingleInputPayment.bundle/field_cell_error"] resizableImageWithCapInsets:(UIEdgeInsetsMake(10.0, 10.0, 10.0, 10.0))];
+    self.containerView.image = self.containerErrorImage;
     self.formInvalid = YES;
     [self shakeAnimation:self.activeTextField.textInputView];
     self.activeTextField.textColor = [UIColor redColor];
 }
 
 - (void)resetFieldState {
-    self.containerView.image = [[UIImage imageNamed:@"OKSingleInputPayment.bundle/field_cell"] resizableImageWithCapInsets:(UIEdgeInsetsMake(10.0, 10.0, 10.0, 10.0))];
+    self.containerView.image = self.containerBGImage;
     self.activeTextField.textColor = self.defaultFontColor;
     self.formInvalid = NO;
 }

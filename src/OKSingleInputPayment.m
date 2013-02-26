@@ -48,7 +48,6 @@ The following expression can be used to validate against all card types, regardl
 @property NSInteger minYear;
 @property NSInteger maxYear;
 
-@property (strong, nonatomic) UIImageView *containerView;
 @property (strong, nonatomic) UIImageView *leftCardView;
 
 @property (strong, nonatomic) UITextField *activeTextField;
@@ -107,7 +106,6 @@ The following expression can be used to validate against all card types, regardl
     self.namePlaceholder = @"Cardholder's Name";
     self.useInputAccessory = YES;
     
-    
     [self updatePlaceholders];
     
     
@@ -127,6 +125,8 @@ The following expression can be used to validate against all card types, regardl
     UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.bounds];
     imageView.image = background;
     self.containerView = imageView;
+    self.backgroundColor = [UIColor clearColor];
+    self.containerView.backgroundColor = [UIColor clearColor];
     [self addSubview:self.containerView];
     
     

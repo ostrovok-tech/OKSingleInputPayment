@@ -305,6 +305,11 @@ The following expression can be used to validate against all card types, regardl
     [self updateDefaultFonts];
 }
 
+- (void)setDefaultFontColor:(UIColor *)defaultFontColor {
+    _defaultFontColor = defaultFontColor;
+    [self updateFontColors];
+}
+
 - (NSString *)getFormattedExpiration {
     return [NSString stringWithFormat:@"%@%@%@", self.cardMonth, self.monthYearSeparator, self.cardYear];
 }
@@ -312,6 +317,10 @@ The following expression can be used to validate against all card types, regardl
 - (void)updateDefaultFonts {
     self.nameTextField.font = self.cardNumberTextField.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForCardNumber];
     self.lastFourLabel.font = self.expirationTextField.font = self.cvcTextField.font = self.zipTextField.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForFields];
+}
+
+- (void)updateFontColors {
+    self.nameTextField.textColor = self.cardNumberTextField.textColor = self.lastFourLabel.textColor = self.expirationTextField.textColor = self.cvcTextField.textColor = self.zipTextField.textColor = self.defaultFontColor;
 }
 
 - (void)updatePlaceholders {

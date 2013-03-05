@@ -153,6 +153,7 @@ The following expression can be used to validate against all card types, regardl
     self.nameTextField.delegate = self;
     self.nameTextField.adjustsFontSizeToFitWidth = YES;
     self.nameTextField.keyboardType = UIKeyboardTypeAlphabet;
+    self.nameTextField.returnKeyType = UIReturnKeyNext;
     self.nameTextField.backgroundColor = [UIColor clearColor];
     self.nameTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     self.nameTextField.inputAccessoryView = self.accessoryToolBar;
@@ -238,14 +239,6 @@ The following expression can be used to validate against all card types, regardl
 }
 
 #pragma mark - Setters for updating placholders when client overrides defaults
-- (void)setUseInputAccessory:(BOOL)useInputAccessory {
-    _useInputAccessory = useInputAccessory;
-    if (useInputAccessory) {
-        [self setupAccessoryToolbar];
-    } else {
-        [self removeAccessoryToolbar];
-    }
-}
 - (void)setYearPlaceholder:(NSString *)yearPlaceholder {
     
     _yearPlaceholder = yearPlaceholder;
@@ -299,6 +292,16 @@ The following expression can be used to validate against all card types, regardl
         [self setupCardNumber];
     }
 }
+
+- (void)setUseInputAccessory:(BOOL)useInputAccessory {
+    _useInputAccessory = useInputAccessory;
+    if (useInputAccessory) {
+        [self setupAccessoryToolbar];
+    } else {
+        [self removeAccessoryToolbar];
+    }
+}
+
 
 - (void)setDefaultFont:(UIFont *)defaultFont {
     _defaultFont = defaultFont;
@@ -415,7 +418,7 @@ The following expression can be used to validate against all card types, regardl
 }
 
 - (void)removeAccessoryToolbar {
-    self.cardNumberTextField.inputAccessoryView = self.expirationTextField.inputAccessoryView = self.cvcTextField.inputAccessoryView = self.zipTextField.inputAccessoryView = nil;
+    self.nameTextField.inputAccessoryView = self.cardNumberTextField.inputAccessoryView = self.expirationTextField.inputAccessoryView = self.cvcTextField.inputAccessoryView = self.zipTextField.inputAccessoryView = nil;
 }
 
 - (UIFont *)fontWithNewSize:(UIFont *)font newSize:(CGFloat)pointSize {
@@ -449,6 +452,11 @@ The following expression can be used to validate against all card types, regardl
     }
     
     self.activeTextField = textField;
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [self next:self];
+    return NO;
 }
 
 // A much smarter card number formatter repurposed from stripe/PaymentKit  

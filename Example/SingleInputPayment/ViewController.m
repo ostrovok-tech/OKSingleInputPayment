@@ -26,6 +26,8 @@
     self.currentStep.text = @"";
     self.singlePayment.includeZipCode = NO;
     self.singlePayment.includeName = YES;
+    self.singlePayment.useInputAccessory = NO;
+
     self.singlePayment.defaultFont = [UIFont fontWithName:@"Helvetica" size:28];
     self.singlePayment.previousButton.title = NSLocalizedString(@"назад", @"Move to the previous input");
     self.singlePayment.nextButton.title = NSLocalizedString(@"вперед", @"Move to the next input");

@@ -32,6 +32,7 @@ The following expression can be used to validate against all card types, regardl
     CGFloat widthPerField;
     NSInteger numberOfFields;
     NSInteger padding;
+    BOOL _fieldInvalid;
 }
 
 @property (strong, nonatomic) UITextField *nameTextField;
@@ -54,8 +55,6 @@ The following expression can be used to validate against all card types, regardl
 
 @property OKCardType displayingCardType;
 @property OKPaymentStep paymentStep;
-
-@property BOOL formInvalid;
 
 
 @end
@@ -93,6 +92,8 @@ The following expression can be used to validate against all card types, regardl
     _cardType = OKCardTypeUnknown;
     _includeZipCode = YES;
     _includeName = NO;
+    _isValid = NO;
+    _fieldInvalid = NO;
     numberOfFields = 4;
     padding = 5;
     
@@ -234,9 +235,6 @@ The following expression can be used to validate against all card types, regardl
         [self.zipTextField setFrame:CGRectMake(self.cvcTextField.frame.origin.x + self.cvcTextField.frame.size.width + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
 }
 
-- (BOOL)getIsFormValid {
-    return [self isFormValid];
-}
 
 #pragma mark - Setters for updating placholders when client overrides defaults
 - (void)setYearPlaceholder:(NSString *)yearPlaceholder {
@@ -586,7 +584,7 @@ The following expression can be used to validate against all card types, regardl
 
 
 - (void)expirationTextFieldValueChanged {
-    if (self.formInvalid)
+    if (_fieldInvalid)
         [self resetFieldState];
     
     if (self.expirationTextField.text.length == 5) {
@@ -601,7 +599,7 @@ The following expression can be used to validate against all card types, regardl
 }
 
 - (void)cvcTextFieldValueChanged {
-    if (self.formInvalid)
+    if (_fieldInvalid)
         [self resetFieldState];
     
     _cardCvc = self.cvcTextField.text;
@@ -611,7 +609,7 @@ The following expression can be used to validate against all card types, regardl
 }
 
 - (void)zipTextFieldValueChanged {
-    if (self.formInvalid)
+    if (_fieldInvalid)
         [self resetFieldState];
     
     if (self.zipTextField.text.length > 4) {
@@ -623,7 +621,7 @@ The following expression can be used to validate against all card types, regardl
 }
 
 - (void)cardNumberTextFieldValueChanged {
-    if (self.formInvalid)
+    if (_fieldInvalid)
         [self resetFieldState];
     
     self.trimmedNumber = [self.cardNumberTextField.text stringByReplacingOccurrencesOfString:@" " withString:@""];
@@ -650,7 +648,7 @@ The following expression can be used to validate against all card types, regardl
 }
 
 - (void)nameTextFieldValueChanged {
-    if (self.formInvalid)
+    if (_fieldInvalid)
         [self resetFieldState];
     
     if (self.nameTextField.text.length > 0) {
@@ -686,7 +684,7 @@ The following expression can be used to validate against all card types, regardl
         [self invalidFieldState];
         return NO;
     }
-    
+    _isValid = YES;
     return YES;
 }
 
@@ -837,7 +835,7 @@ The following expression can be used to validate against all card types, regardl
 #pragma mark - Field styles
 - (void)invalidFieldState {
     self.containerView.image = self.containerErrorImage;
-    self.formInvalid = YES;
+    _fieldInvalid = YES;
     [self shakeAnimation:self.activeTextField.textInputView];
     self.activeTextField.textColor = [UIColor redColor];
 }
@@ -845,7 +843,8 @@ The following expression can be used to validate against all card types, regardl
 - (void)resetFieldState {
     self.containerView.image = self.containerBGImage;
     self.activeTextField.textColor = self.defaultFontColor;
-    self.formInvalid = NO;
+    _fieldInvalid = NO;
+    
 }
 
 @end

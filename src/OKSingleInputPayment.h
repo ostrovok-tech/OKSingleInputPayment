@@ -44,8 +44,7 @@ typedef enum {
 @protocol OKSingleInputPaymentDelegate;
 
 @interface OKSingleInputPayment : UIView <UITextFieldDelegate>
-@property (strong, nonatomic) UIFont *defaultFont;
-@property (strong, nonatomic) UIColor *defaultFontColor;
+
 @property (strong, readonly) NSString *cardNumber;
 @property (strong, readonly) NSString *cardCvc;
 @property (strong, readonly) NSString *cardMonth;
@@ -55,7 +54,7 @@ typedef enum {
 @property (strong, readonly) NSString *cardName;
 @property (strong, nonatomic, readonly) UIToolbar *accessoryToolBar;
 
-@property (readonly) BOOL isFormValid;
+@property (readonly) BOOL isValid;
 
 
 @property (readonly) OKCardType cardType;
@@ -86,7 +85,6 @@ typedef enum {
 @property (strong, nonatomic) UIImage *containerBGImage;
 @property (strong, nonatomic) UIImage *containerErrorImage;
 
-
 @property (strong, nonatomic) NSString *cvcPlaceholder;
 @property (strong, nonatomic) NSString *zipPlaceholder;
 @property (strong, nonatomic) NSString *numberPlaceholder;
@@ -96,9 +94,15 @@ typedef enum {
 @property (strong, nonatomic) NSString *namePlaceholder;
 
 @property (strong, nonatomic) UIFont *placeholderFont;
+@property (strong, nonatomic) UIFont *defaultFont;
+@property (strong, nonatomic) UIColor *defaultFontColor;
 
 @property (weak, nonatomic) id <OKSingleInputPaymentDelegate> delegate;
 
+
+- (IBAction)next:(id)sender;
+- (IBAction)previous:(id)sender;
+- (IBAction)done:(id)sender;
 @end
 
 

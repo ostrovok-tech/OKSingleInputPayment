@@ -25,7 +25,7 @@
     
     self.currentStep.text = @"";
     self.singlePayment.includeZipCode = NO;
-    self.singlePayment.includeName = YES;
+    self.singlePayment.nameFieldType = OKNameFieldLast;
     self.singlePayment.useInputAccessory = NO;
 
     self.singlePayment.defaultFont = [UIFont fontWithName:@"Helvetica" size:28];

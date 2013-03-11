@@ -91,7 +91,7 @@ The following expression can be used to validate against all card types, regardl
     self.displayingCardType = OKCardTypeUnknown;
     _cardType = OKCardTypeUnknown;
     _includeZipCode = YES;
-    _includeName = NO;
+    _nameFieldType = OKNameFieldNone;
     _isValid = NO;
     _fieldInvalid = NO;
     numberOfFields = 4;
@@ -282,9 +282,9 @@ The following expression can be used to validate against all card types, regardl
     _includeZipCode = includeZipCode;
 }
 
-- (void)setIncludeName:(BOOL)includeName {
-    _includeName = includeName;
-    if (includeName) {
+- (void)setNameFieldType:(OKNameFieldType)nameFieldType {
+    _nameFieldType = nameFieldType;
+    if (nameFieldType == OKNameFieldFirst) {
         [self setupName];
     } else {
         [self setupCardNumber];
@@ -355,8 +355,15 @@ The following expression can be used to validate against all card types, regardl
 #pragma mark - InputAccessory actions
 - (IBAction)next:(id)sender {
     if (self.activeTextField == self.nameTextField) {
-        [self setupCardNumber];
-        [self.cardNumberTextField becomeFirstResponder];
+        if (self.nameFieldType == OKNameFieldLast && [self isFormValid]) {
+            if ([self.delegate respondsToSelector:@selector(formDidBecomeValid)]){
+                [self.delegate formDidBecomeValid];
+            }
+        } else {
+            [self setupCardNumber];
+            [self.cardNumberTextField becomeFirstResponder];
+        }
+        
     } else if (self.activeTextField == self.cardNumberTextField) {
         if (![self isValidCardNumber]){
             [self invalidFieldState];
@@ -369,29 +376,47 @@ The following expression can be used to validate against all card types, regardl
     } else if (self.activeTextField == self.cvcTextField) {
         if (self.includeZipCode) {
             [self.zipTextField becomeFirstResponder];
+        } else if (self.nameFieldType == OKNameFieldLast) {
+            [self setupName];
+            [self.nameTextField becomeFirstResponder];
         } else {
             if ([self.delegate respondsToSelector:@selector(formDidBecomeValid)] && [self isFormValid]){
                 [self.delegate formDidBecomeValid];
             }
         }
     } else if (self.activeTextField == self.zipTextField && [self isFormValid]) {
-        if ([self.delegate respondsToSelector:@selector(formDidBecomeValid)]){
-            [self.delegate formDidBecomeValid];
+        if (self.nameFieldType == OKNameFieldLast) {
+            [self setupName];
+            [self.nameTextField becomeFirstResponder];
+        } else {
+            if ([self.delegate respondsToSelector:@selector(formDidBecomeValid)]){
+                [self.delegate formDidBecomeValid];
+            }
         }
+        
     }
 }
 
 - (IBAction)previous:(id)sender {
-    if (self.activeTextField == self.cardNumberTextField && self.includeName) {
+    if (self.activeTextField == self.cardNumberTextField && self.nameFieldType == OKNameFieldFirst) {
         [self setupName];
         [self.nameTextField becomeFirstResponder];
-    }else if (self.activeTextField == self.expirationTextField) {
+    } else if (self.activeTextField == self.expirationTextField) {
         [self setupCardNumber];
         [self.cardNumberTextField becomeFirstResponder];
     } else if (self.activeTextField == self.cvcTextField) {
         [self.expirationTextField becomeFirstResponder];
     } else if (self.activeTextField == self.zipTextField) {
         [self.cvcTextField becomeFirstResponder];
+    } else if (self.activeTextField == self.nameTextField) {
+        if (self.nameFieldType == OKNameFieldLast) {
+            [self setupBackSide];
+            if (self.includeZipCode) {
+                [self.zipTextField becomeFirstResponder];
+            } else {
+                [self.cvcTextField becomeFirstResponder];
+            }
+        }
     }
 }
 
@@ -492,6 +517,13 @@ The following expression can be used to validate against all card types, regardl
     
     if ([string isEqualToString:@" "] && textField != self.nameTextField)
         return NO;
+    
+    // User is hitting the delete button on the last character of the field
+    if (textField.text.length == 1 && [string isEqualToString:@""]) {
+        textField.text = nil;
+        [self previous:self];
+        return NO;
+    }
     
     if (self.activeTextField == self.cardNumberTextField) {
         //if (textField.text.length == 0) {
@@ -745,7 +777,7 @@ The following expression can be used to validate against all card types, regardl
 }
 
 - (BOOL)isValidName {
-    if (self.nameTextField.text.length > 0 || !self.includeName) {
+    if ((self.nameTextField.text.length > 0) || (_nameFieldType == OKNameFieldNone)) {
         return YES;
     }
     return NO;

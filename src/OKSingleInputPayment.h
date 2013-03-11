@@ -41,6 +41,13 @@ typedef enum {
     OKCardTypeCvc
 } OKCardType;
 
+
+typedef enum {
+     OKNameFieldNone,
+     OKNameFieldFirst,
+     OKNameFieldLast
+} OKNameFieldType;
+
 @protocol OKSingleInputPaymentDelegate;
 
 @interface OKSingleInputPayment : UIView <UITextFieldDelegate>
@@ -75,7 +82,8 @@ typedef enum {
  * Optionally include the cardholder's name field. Turning this field on requires the input accessory view since there is no
  * good way to advance the user's form postion based on input validation
  */
-@property (nonatomic) BOOL includeName;
+
+@property (nonatomic) OKNameFieldType nameFieldType;
 
 
 @property (strong, nonatomic) UIBarButtonItem *previousButton;

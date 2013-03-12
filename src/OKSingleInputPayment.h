@@ -27,7 +27,7 @@ typedef enum {
     OKPaymentStepCCNumber,
     OKPaymentStepExpiration,
     OKPaymentStepSecurityCode,
-    OKPaymentStepSecurityZip
+    OKPaymentStepZip
 } OKPaymentStep;
 
 typedef enum {

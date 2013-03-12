@@ -54,7 +54,7 @@
         case OKPaymentStepSecurityCode:
             self.currentStep.text = @"CVC code";
             break;
-        case OKPaymentStepSecurityZip:
+        case OKPaymentStepZip:
             self.currentStep.text = @"Zipcode";
             break;
         default:

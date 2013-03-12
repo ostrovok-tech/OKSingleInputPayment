@@ -466,7 +466,7 @@ The following expression can be used to validate against all card types, regardl
         self.paymentStep = OKPaymentStepExpiration;
         [self animateLeftView:self.cardType];
     } else if (textField == self.zipTextField) {
-        self.paymentStep = OKPaymentStepSecurityZip;
+        self.paymentStep = OKPaymentStepZip;
         [self animateLeftView:self.cardType];
     }
     
@@ -690,34 +690,64 @@ The following expression can be used to validate against all card types, regardl
 
 #pragma mark - Validation methods
 - (BOOL)isFormValid {
-    if (![self isValidName]) {
-        [self setupName];
-        [self.nameTextField becomeFirstResponder];
-        [self invalidFieldState];
-        return NO;
-    } else if (![self isValidCardNumber]) {
-        [self setupCardNumber];
-        [self.cardNumberTextField becomeFirstResponder];
-        [self invalidFieldState];
-        return NO;
-    } else if (![self isValidExpiration]) {
-        [self setupBackSide];
-        [self.expirationTextField becomeFirstResponder];
-        [self invalidFieldState];
-        return NO;
-    } else if (![self isValidCvc]) {
-        [self setupBackSide];
-        [self.cvcTextField becomeFirstResponder];
-        [self invalidFieldState];
-        return NO;
-    } else if (![self isValidZip]) {
-        [self setupBackSide];
-        [self.zipTextField becomeFirstResponder];
-        [self invalidFieldState];
-        return NO;
+    OKPaymentStep invalidField = [self currentInvalidStep];
+    
+    switch (invalidField) {
+        case OKPaymentStepName:
+            [self setupName];
+            [self.nameTextField becomeFirstResponder];
+            [self invalidFieldState];
+            return NO;
+            break;
+        case OKPaymentStepCCNumber:
+            [self setupCardNumber];
+            [self.cardNumberTextField becomeFirstResponder];
+            [self invalidFieldState];
+            return NO;
+            break;
+        case OKPaymentStepExpiration:
+            [self setupBackSide];
+            [self.expirationTextField becomeFirstResponder];
+            [self invalidFieldState];
+            return NO;
+            break;
+        case OKPaymentStepSecurityCode:
+            [self setupBackSide];
+            [self.cvcTextField becomeFirstResponder];
+            [self invalidFieldState];
+            return NO;
+            break;
+        case OKPaymentStepZip:
+            [self setupBackSide];
+            [self.zipTextField becomeFirstResponder];
+            [self invalidFieldState];
+            return NO;
+            break;
+        default:
+            break;
     }
-    _isValid = YES;
+    
     return YES;
+}
+
+- (OKPaymentStep)currentInvalidStep {
+    if (![self isValidName])
+        return OKPaymentStepName;
+    
+    if (![self isValidCardNumber])
+        return OKPaymentStepCCNumber;
+    
+    if (![self isValidExpiration]) 
+        return OKPaymentStepExpiration;
+    
+    if (![self isValidCvc])
+        return OKPaymentStepSecurityCode;
+    
+    if (![self isValidZip])
+        return OKPaymentStepZip;
+    
+    _isValid = YES;
+    return nil;
 }
 
 - (BOOL)isValidCardNumber {

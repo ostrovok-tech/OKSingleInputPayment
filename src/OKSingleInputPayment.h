@@ -109,6 +109,9 @@ typedef enum {
 - (IBAction)next:(id)sender;
 - (IBAction)previous:(id)sender;
 - (IBAction)done:(id)sender;
+- (BOOL)isValid:(OKPaymentStep *)invalidStep;
+- (void)hintForInvalidStep:(OKPaymentStep)invalidField;
+
 @end
 
 

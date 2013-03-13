@@ -79,10 +79,8 @@ typedef enum {
 @property (nonatomic) BOOL useInputAccessory;
 
 /**
- * Optionally include the cardholder's name field. Turning this field on requires the input accessory view since there is no
- * good way to advance the user's form postion based on input validation
+ * Optionally include the cardholder's name field. Using a name field will not advance
  */
-
 @property (nonatomic) OKNameFieldType nameFieldType;
 
 
@@ -119,5 +117,6 @@ typedef enum {
 @optional
 - (void)formDidBecomeValid;
 - (void)didChangePaymentStep:(OKPaymentStep)paymentStep;
+- (void)nameFieldDidChange:(NSString *)text;
 
 @end

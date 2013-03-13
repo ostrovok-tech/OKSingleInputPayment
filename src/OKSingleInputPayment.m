@@ -354,19 +354,25 @@ The following expression can be used to validate against all card types, regardl
 
 #pragma mark - InputAccessory actions
 - (IBAction)next:(id)sender {
+    OKPaymentStep invalidField;
+    BOOL isValid = [self isValid:&invalidField];
+    
     if (self.activeTextField == self.nameTextField) {
-        if (self.nameFieldType == OKNameFieldLast && [self isFormValid]) {
-            if ([self.delegate respondsToSelector:@selector(formDidBecomeValid)]){
-                [self.delegate formDidBecomeValid];
+        if (self.nameFieldType == OKNameFieldLast && isValid) {
+            if (self.nameFieldType == OKNameFieldLast) {
+                if ([self.delegate respondsToSelector:@selector(formDidBecomeValid)]){
+                    [self.delegate formDidBecomeValid];
+                }
+            } else {
+                [self setupCardNumber];
+                [self.cardNumberTextField becomeFirstResponder];
             }
         } else {
-            [self setupCardNumber];
-            [self.cardNumberTextField becomeFirstResponder];
+            [self hintForInvalidStep:invalidField];
         }
-        
     } else if (self.activeTextField == self.cardNumberTextField) {
         if (![self isValidCardNumber]){
-            [self invalidFieldState];
+            [self hintForInvalidStep:OKPaymentStepCCNumber];
             return;
         }
         [self setupBackSide];
@@ -380,11 +386,11 @@ The following expression can be used to validate against all card types, regardl
             [self setupName];
             [self.nameTextField becomeFirstResponder];
         } else {
-            if ([self.delegate respondsToSelector:@selector(formDidBecomeValid)] && [self isFormValid]){
+            if ([self.delegate respondsToSelector:@selector(formDidBecomeValid)] && isValid){
                 [self.delegate formDidBecomeValid];
             }
         }
-    } else if (self.activeTextField == self.zipTextField && [self isFormValid]) {
+    } else if (self.activeTextField == self.zipTextField && isValid) {
         if (self.nameFieldType == OKNameFieldLast) {
             [self setupName];
             [self.nameTextField becomeFirstResponder];
@@ -421,10 +427,14 @@ The following expression can be used to validate against all card types, regardl
 }
 
 - (IBAction)done:(id)sender {
-    if ([self isFormValid]) {
+    OKPaymentStep invalidField;
+    BOOL isValid = [self isValid:&invalidField];
+    if (isValid) {
         if ([self.delegate respondsToSelector:@selector(formDidBecomeValid)]){
             [self.delegate formDidBecomeValid];
         }
+    } else {
+        [self hintForInvalidStep:invalidField];
     }
 }
 
@@ -683,71 +693,80 @@ The following expression can be used to validate against all card types, regardl
     if (_fieldInvalid)
         [self resetFieldState];
     
+    if ([self.delegate respondsToSelector:@selector(nameFieldDidChange:)]) {
+        [self.delegate nameFieldDidChange:self.nameTextField.text];
+    }
+    
     if (self.nameTextField.text.length > 0) {
         _cardName = self.nameTextField.text;
     }
 }
 
 #pragma mark - Validation methods
-- (BOOL)isFormValid {
-    OKPaymentStep invalidField = [self currentInvalidStep];
+- (void)hintForInvalidStep:(OKPaymentStep)invalidField {
+    
     
     switch (invalidField) {
         case OKPaymentStepName:
             [self setupName];
             [self.nameTextField becomeFirstResponder];
             [self invalidFieldState];
-            return NO;
             break;
         case OKPaymentStepCCNumber:
             [self setupCardNumber];
             [self.cardNumberTextField becomeFirstResponder];
             [self invalidFieldState];
-            return NO;
             break;
         case OKPaymentStepExpiration:
             [self setupBackSide];
             [self.expirationTextField becomeFirstResponder];
             [self invalidFieldState];
-            return NO;
             break;
         case OKPaymentStepSecurityCode:
             [self setupBackSide];
             [self.cvcTextField becomeFirstResponder];
             [self invalidFieldState];
-            return NO;
             break;
         case OKPaymentStepZip:
             [self setupBackSide];
             [self.zipTextField becomeFirstResponder];
             [self invalidFieldState];
-            return NO;
             break;
         default:
             break;
     }
     
-    return YES;
 }
 
-- (OKPaymentStep)currentInvalidStep {
-    if (![self isValidName])
-        return OKPaymentStepName;
+- (BOOL)isValid:(OKPaymentStep *)invalidStep {
+    if (![self isValidName]) {
+        *invalidStep = OKPaymentStepName;
+        return NO;
+    }
+       
+    if (![self isValidCardNumber]) {
+        *invalidStep = OKPaymentStepCCNumber;
+        return NO;
+    }
     
-    if (![self isValidCardNumber])
-        return OKPaymentStepCCNumber;
+    if (![self isValidExpiration]) {
+        *invalidStep = OKPaymentStepCCNumber;
+        return NO;
+
+    }
     
-    if (![self isValidExpiration]) 
-        return OKPaymentStepExpiration;
+    if (![self isValidCvc]) {
+        *invalidStep = OKPaymentStepSecurityCode;
+        return NO;
+    }
     
-    if (![self isValidCvc])
-        return OKPaymentStepSecurityCode;
+    if (![self isValidZip]) {
+        *invalidStep = OKPaymentStepZip;
+        return NO;
+    }
     
-    if (![self isValidZip])
-        return OKPaymentStepZip;
-    
-    _isValid = YES;
-    return nil;
+    return YES;
+
 }
 
 - (BOOL)isValidCardNumber {

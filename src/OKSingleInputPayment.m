@@ -520,7 +520,7 @@ The following expression can be used to validate against all card types, regardl
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
-    NSLog(@"Text: %@, replacementString: %@, Length of text %d, location: %d, length: %d", textField.text, string, textField.text.length, range.location, range.length);
+    //NSLog(@"Text: %@, replacementString: %@, Length of text %d, location: %d, length: %d", textField.text, string, textField.text.length, range.location, range.length);
     
     // This is lazy and should be refactored. Don't allow the user to move the cursor around the text field as text formatting can't handle it very gracefully
     if(range.location < textField.text.length && !((textField.text.length - range.location) == 1  && [string isEqualToString:@""])) return NO;
@@ -667,7 +667,7 @@ The following expression can be used to validate against all card types, regardl
         [self resetFieldState];
     
     self.trimmedNumber = [self.cardNumberTextField.text stringByReplacingOccurrencesOfString:@" " withString:@""];
-    NSLog(@"trimmed NUmber %@", self.trimmedNumber);
+    //NSLog(@"trimmed NUmber %@", self.trimmedNumber);
     
     if (self.cardType == OKCArdTypeMastercard) {
         if (self.trimmedNumber.length == 16 && [self isValidCardNumber]) {
@@ -771,7 +771,6 @@ The following expression can be used to validate against all card types, regardl
 
 - (BOOL)isValidCardNumber {
     if (self.cardType == OKCardTypeUnknown) {
-        NSLog(@"Invalid card type");
         [self invalidFieldState];
         return NO;
     } else if ( self.cardType == OKCardTypeVisa) {

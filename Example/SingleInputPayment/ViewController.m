@@ -73,4 +73,9 @@
     self.statusImage.image = [UIImage imageNamed:@"photo-accept"];
 }
 
+- (void)nameFieldDidChange:(NSString *)text {
+    NSLog(@"Name field changed with %@", text);
+}
+
+
 @end

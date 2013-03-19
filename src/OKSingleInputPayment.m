@@ -315,9 +315,20 @@ The following expression can be used to validate against all card types, regardl
     return [NSString stringWithFormat:@"%@%@%@", self.cardMonth, self.monthYearSeparator, self.cardYear];
 }
 
+// If the user defined font is within the maximum for a particular field, take
 - (void)updateDefaultFonts {
-    self.nameTextField.font = self.cardNumberTextField.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForCardNumber];
-    self.lastFourLabel.font = self.expirationTextField.font = self.cvcTextField.font = self.zipTextField.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForFields];
+    
+    CGFloat newCardFontSize =  (maximumFontForCardNumber > self.defaultFont.pointSize) ? self.defaultFont.pointSize : maximumFontForCardNumber;
+    CGFloat newFieldFontSize = (maximumFontForFields > self.defaultFont.pointSize) ? self.defaultFont.pointSize : maximumFontForFields;
+    
+    self.nameTextField.font = self.cardNumberTextField.font = [self fontWithNewSize:self.defaultFont newSize:newCardFontSize];
+    self.lastFourLabel.font = self.expirationTextField.font = self.cvcTextField.font = self.zipTextField.font = [self fontWithNewSize:self.defaultFont newSize:newFieldFontSize];
+}
+
+- (UIFont *)fontWithNewSize:(UIFont *)font newSize:(CGFloat)pointSize {
+    NSString *fontName = font.fontName;
+    UIFont *newFont = [UIFont fontWithName:fontName size:pointSize];
+    return newFont;
 }
 
 - (void)updateFontColors {
@@ -454,11 +465,7 @@ The following expression can be used to validate against all card types, regardl
     self.nameTextField.inputAccessoryView = self.cardNumberTextField.inputAccessoryView = self.expirationTextField.inputAccessoryView = self.cvcTextField.inputAccessoryView = self.zipTextField.inputAccessoryView = nil;
 }
 
-- (UIFont *)fontWithNewSize:(UIFont *)font newSize:(CGFloat)pointSize {
-    NSString *fontName = font.fontName;
-    UIFont *newFont = [UIFont fontWithName:fontName size:pointSize];
-    return newFont;
-}
+
 
 #pragma mark - UITextFieldDelegate methods
 
@@ -705,13 +712,7 @@ The following expression can be used to validate against all card types, regardl
 #pragma mark - Validation methods
 - (void)hintForInvalidStep:(OKPaymentStep)invalidField {
     
-    
     switch (invalidField) {
-        case OKPaymentStepName:
-            [self setupName];
-            [self.nameTextField becomeFirstResponder];
-            [self invalidFieldState];
-            break;
         case OKPaymentStepCCNumber:
             [self setupCardNumber];
             [self.cardNumberTextField becomeFirstResponder];
@@ -732,6 +733,11 @@ The following expression can be used to validate against all card types, regardl
             [self.zipTextField becomeFirstResponder];
             [self invalidFieldState];
             break;
+        case OKPaymentStepName:
+            [self setupName];
+            [self.nameTextField becomeFirstResponder];
+            [self invalidFieldState];
+            break;
         default:
             break;
     }
@@ -739,11 +745,7 @@ The following expression can be used to validate against all card types, regardl
 }
 
 - (BOOL)isValid:(OKPaymentStep *)invalidStep {
-    if (![self isValidName]) {
-        *invalidStep = OKPaymentStepName;
-        return NO;
-    }
-       
+           
     if (![self isValidCardNumber]) {
         *invalidStep = OKPaymentStepCCNumber;
         return NO;
@@ -752,7 +754,6 @@ The following expression can be used to validate against all card types, regardl
     if (![self isValidExpiration]) {
         *invalidStep = OKPaymentStepCCNumber;
         return NO;
-
     }
     
     if (![self isValidCvc]) {
@@ -764,6 +765,12 @@ The following expression can be used to validate against all card types, regardl
         *invalidStep = OKPaymentStepZip;
         return NO;
     }
+    
+    if (![self isValidName]) {
+        *invalidStep = OKPaymentStepName;
+        return NO;
+    }
+
     
     return YES;
 

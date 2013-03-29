@@ -752,7 +752,7 @@ The following expression can be used to validate against all card types, regardl
     }
     
     if (![self isValidExpiration]) {
-        *invalidStep = OKPaymentStepCCNumber;
+        *invalidStep = OKPaymentStepExpiration;
         return NO;
     }
     

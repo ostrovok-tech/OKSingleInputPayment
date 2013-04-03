@@ -91,6 +91,7 @@ The following expression can be used to validate against all card types, regardl
     self.displayingCardType = OKCardTypeUnknown;
     _cardType = OKCardTypeUnknown;
     _includeZipCode = YES;
+    _capitalizeName = YES;
     _nameFieldType = OKNameFieldNone;
     _isValid = NO;
     _fieldInvalid = NO;
@@ -705,7 +706,7 @@ The following expression can be used to validate against all card types, regardl
     }
     
     if (self.nameTextField.text.length > 0) {
-        _cardName = self.nameTextField.text;
+        _cardName = _capitalizeName ? [self.nameTextField.text uppercaseString] :  self.nameTextField.text;
     }
 }
 
@@ -749,7 +750,7 @@ The following expression can be used to validate against all card types, regardl
     if (![self isValidCardNumber]) {
         *invalidStep = OKPaymentStepCCNumber;
         return NO;
-    }
+    } 
     
     if (![self isValidExpiration]) {
         *invalidStep = OKPaymentStepExpiration;

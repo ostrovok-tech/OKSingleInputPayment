@@ -83,6 +83,7 @@ typedef enum {
  */
 @property (nonatomic) OKNameFieldType nameFieldType;
 
+@property (nonatomic) BOOL capitalizeName;
 
 @property (strong, nonatomic) UIBarButtonItem *previousButton;
 @property (strong, nonatomic) UIBarButtonItem *nextButton;

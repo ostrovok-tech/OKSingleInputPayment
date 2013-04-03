@@ -5,10 +5,10 @@ A customizable implementation of [Square's](http://squareup.com) single input pa
 
 This field was designed so it could be easily localized for different regions. Zipcode/Name fields are optional and all placeholder text can be localized. There is an input accessory view you can optionally turn on which gives users a back/next/right toolbar for navigating the input. This accessory view will be automatically turned on when including the name field as there is no good way to detect when the form should be advanced.
 
-![Screen 1](https://s3.amazonaws.com/rromanchuk/singleInput/single_input1.png "Optional cardholder's name")
-![Screen 2](https://s3.amazonaws.com/rromanchuk/singleInput/single_input2.png "Optional cardholder's name")
-![Screen 3](https://s3.amazonaws.com/rromanchuk/singleInput/single_input3.png "Optional cardholder's name")
-![Screen 4](https://s3.amazonaws.com/rromanchuk/singleInput/single_input4.png "Optional cardholder's name")
+![Screen 1](https://s3.amazonaws.com/rromanchuk-public/singleInput/single_input1.png "Optional cardholder's name")
+![Screen 2](https://s3.amazonaws.com/rromanchuk-public/singleInput/single_input2.png "Optional cardholder's name")
+![Screen 3](https://s3.amazonaws.com/rromanchuk-public/singleInput/single_input3.png "Optional cardholder's name")
+![Screen 4](https://s3.amazonaws.com/rromanchuk-public/singleInput/single_input4.png "Optional cardholder's name")
 ## Usage
 ### Using without storyboard
 ```objective-c

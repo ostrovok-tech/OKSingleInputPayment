@@ -627,6 +627,12 @@ The following expression can be used to validate against all card types, regardl
         if (textField.text.length == 10 && ![string isEqualToString:@""]) {
             return NO;
         }
+    } else if (self.activeTextField == self.nameTextField) {
+        if (![string isEqualToString:@""] && _capitalizeName) {
+            textField.text = [textField.text stringByAppendingString:[string uppercaseString]];
+            return NO;
+        }
+            
     }
     
     return YES;
@@ -706,7 +712,7 @@ The following expression can be used to validate against all card types, regardl
     }
     
     if (self.nameTextField.text.length > 0) {
-        _cardName = _capitalizeName ? [self.nameTextField.text uppercaseString] :  self.nameTextField.text;
+        _cardName = self.nameTextField.text;
     }
 }
 

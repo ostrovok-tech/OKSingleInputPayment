@@ -630,6 +630,7 @@ The following expression can be used to validate against all card types, regardl
     } else if (self.activeTextField == self.nameTextField) {
         if (![string isEqualToString:@""] && _capitalizeName) {
             textField.text = [textField.text stringByAppendingString:[string uppercaseString]];
+            [self nameTextFieldValueChanged];
             return NO;
         }
             

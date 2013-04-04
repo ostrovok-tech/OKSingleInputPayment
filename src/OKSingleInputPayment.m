@@ -707,13 +707,12 @@ The following expression can be used to validate against all card types, regardl
     if (_fieldInvalid)
         [self resetFieldState];
     
+     _cardName = self.nameTextField.text;
+    
     if ([self.delegate respondsToSelector:@selector(nameFieldDidChange:)]) {
         [self.delegate nameFieldDidChange:self.nameTextField.text];
     }
     
-    if (self.nameTextField.text.length > 0) {
-        _cardName = self.nameTextField.text;
-    }
 }
 
 #pragma mark - Validation methods

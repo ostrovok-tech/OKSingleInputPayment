@@ -286,8 +286,10 @@ The following expression can be used to validate against all card types, regardl
 - (void)setNameFieldType:(OKNameFieldType)nameFieldType {
     _nameFieldType = nameFieldType;
     if (nameFieldType == OKNameFieldFirst) {
+        self.nameTextField.returnKeyType = UIReturnKeyNext;
         [self setupName];
     } else {
+        self.nameTextField.returnKeyType = UIReturnKeyDone;
         [self setupCardNumber];
     }
 }
@@ -374,6 +376,9 @@ The following expression can be used to validate against all card types, regardl
             if (self.nameFieldType == OKNameFieldLast) {
                 if ([self.delegate respondsToSelector:@selector(formDidBecomeValid)]){
                     [self.delegate formDidBecomeValid];
+                }
+                if ([self.delegate respondsToSelector:@selector(nameFieldDidEndEditing)]) {
+                    [self.delegate nameFieldDidEndEditing];
                 }
             } else {
                 [self setupCardNumber];

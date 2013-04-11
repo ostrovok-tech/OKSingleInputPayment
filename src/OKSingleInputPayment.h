@@ -122,5 +122,5 @@ typedef enum {
 - (void)formDidBecomeValid;
 - (void)didChangePaymentStep:(OKPaymentStep)paymentStep;
 - (void)nameFieldDidChange:(NSString *)text;
-
+- (void)nameFieldDidEndEditing;
 @end

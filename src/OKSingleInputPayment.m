@@ -32,6 +32,9 @@ The following expression can be used to validate against all card types, regardl
     CGFloat widthPerField;
     NSInteger numberOfFields;
     NSInteger padding;
+    NSInteger _pages;
+    NSInteger _currentPage;
+
     BOOL _fieldInvalid;
 }
 
@@ -41,6 +44,7 @@ The following expression can be used to validate against all card types, regardl
 @property (strong, nonatomic) UITextField *cvcTextField;
 @property (strong, nonatomic) UITextField *zipTextField;
 @property (strong, nonatomic) UILabel *lastFourLabel;
+@property (strong, nonatomic) UIScrollView *scrollContainer;
 
 
 
@@ -95,6 +99,8 @@ The following expression can be used to validate against all card types, regardl
     _nameFieldType = OKNameFieldNone;
     _isValid = NO;
     _fieldInvalid = NO;
+    _pages = 3;
+    _currentPage = 0;
     numberOfFields = 4;
     padding = 5;
     
@@ -133,11 +139,24 @@ The following expression can be used to validate against all card types, regardl
     
     
     self.leftCardView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"OKSingleInputPayment.bundle/credit_card_icon"]];
-    self.leftCardView.backgroundColor = [UIColor blueColor];
     [self.leftCardView setFrame:CGRectMake(10, (self.frame.size.height / 2) - (self.leftCardView.frame.size.height/2), self.leftCardView.frame.size.width, self.leftCardView.frame.size.height)];
     
     
-    self.cardNumberTextField = [[UITextField alloc] initWithFrame:CGRectMake((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding, (self.frame.size.height / 2) - ((self.frame.size.height * 0.9) /2), self.frame.size.width - ((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding) - 5, self.frame.size.height * 0.9)];
+    self.scrollContainer = [[UIScrollView alloc] initWithFrame:CGRectMake((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding, (self.frame.size.height / 2) - ((self.frame.size.height * 0.9) /2), self.frame.size.width - ((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding) - 5, self.frame.size.height * 0.9)];
+    self.scrollContainer.showsHorizontalScrollIndicator = NO;
+    self.scrollContainer.showsVerticalScrollIndicator = NO;
+    self.scrollContainer.scrollsToTop = NO;
+    self.scrollContainer.pagingEnabled = YES;
+    self.scrollContainer.delegate = self;
+    [self.scrollContainer setContentSize:CGSizeMake(self.scrollContainer.frame.size.width * _pages, self.scrollContainer.frame.size.height)];
+
+
+    [self addSubview:self.scrollContainer];
+    
+    self.cardNumberTextField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, self.scrollContainer.frame.size.width, self.scrollContainer.frame.size.height)];
+    
+    
+    //self.cardNumberTextField = [[UITextField alloc] initWithFrame:CGRectMake((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding, (self.frame.size.height / 2) - ((self.frame.size.height * 0.9) /2), self.frame.size.width - ((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding) - 5, self.frame.size.height * 0.9)];
     [self.numberPlaceholder sizeWithFont:self.defaultFont minFontSize:self.cardNumberTextField.minimumFontSize actualFontSize:&maximumFontForCardNumber forWidth:self.cardNumberTextField.frame.size.width lineBreakMode:NSLineBreakByClipping];
 
     //self.cardNumberTextField.backgroundColor = [UIColor yellowColor];
@@ -150,48 +169,42 @@ The following expression can be used to validate against all card types, regardl
     [self.cardNumberTextField addTarget:self action:@selector(cardNumberTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
     self.cardNumberTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     
-    self.nameTextField = [[UITextField alloc] initWithFrame:self.cardNumberTextField.frame];
-    self.nameTextField.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForCardNumber];
-    self.nameTextField.delegate = self;
-    self.nameTextField.adjustsFontSizeToFitWidth = YES;
-    self.nameTextField.keyboardType = UIKeyboardTypeAlphabet;
-    self.nameTextField.returnKeyType = UIReturnKeyNext;
-    self.nameTextField.backgroundColor = [UIColor clearColor];
-    self.nameTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-    self.nameTextField.inputAccessoryView = self.accessoryToolBar;
-    self.nameTextField.hidden = YES;
-    [self.nameTextField addTarget:self action:@selector(nameTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
-
-    [self addSubview:self.nameTextField];
-    [self addSubview:self.cardNumberTextField];
+    [self.scrollContainer addSubview:self.cardNumberTextField];
+    
+    
+    
+        //[self addSubview:self.cardNumberTextField];
     [self addSubview:self.leftCardView];
     
     maximumWidthSpace = self.frame.size.width - ((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + (padding * numberOfFields));
     widthPerField = maximumWidthSpace / numberOfFields;
     
+    // Last four label
     [@"12345" sizeWithFont:self.defaultFont minFontSize:self.cardNumberTextField.minimumFontSize actualFontSize:&maximumFontForFields forWidth:widthPerField lineBreakMode:NSLineBreakByClipping];
-    self.lastFourLabel = [[UILabel alloc] initWithFrame:CGRectMake((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
+    //self.lastFourLabel = [[UILabel alloc] initWithFrame:CGRectMake((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
+    self.lastFourLabel = [[UILabel alloc] initWithFrame:CGRectMake((self.cardNumberTextField.frame.origin.x + self.cardNumberTextField.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
     //self.lastFourLabel.backgroundColor = [UIColor greenColor];
     self.lastFourLabel.backgroundColor = [UIColor clearColor];
-    self.lastFourLabel.hidden = YES;
     self.lastFourLabel.adjustsFontSizeToFitWidth = YES;
     UITapGestureRecognizer *tg = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(previous:)];
     [self.lastFourLabel addGestureRecognizer:tg];
     self.lastFourLabel.userInteractionEnabled = YES;
-    [self addSubview:self.lastFourLabel];
+    //[self addSubview:self.lastFourLabel];
+    [self.scrollContainer addSubview:self.lastFourLabel];
+    
+    
     
     self.expirationTextField = [[UITextField alloc] initWithFrame:CGRectMake((self.lastFourLabel.frame.origin.x + self.lastFourLabel.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
     //self.expirationTextField.backgroundColor = [UIColor greenColor];
     self.expirationTextField.backgroundColor = [UIColor clearColor];
     self.expirationTextField.adjustsFontSizeToFitWidth = YES;
     self.expirationTextField.delegate = self;
-    self.expirationTextField.hidden = YES;
     self.expirationTextField.inputAccessoryView = self.accessoryToolBar;
     self.expirationTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     self.expirationTextField.keyboardType = UIKeyboardTypeNumberPad;
     [self.expirationTextField addTarget:self action:@selector(expirationTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
-    
-    [self addSubview:self.expirationTextField];
+    [self.scrollContainer addSubview:self.expirationTextField];
+    //[self addSubview:self.expirationTextField];
     
     
     self.cvcTextField = [[UITextField alloc] initWithFrame:CGRectMake(self.expirationTextField.frame.origin.x + self.expirationTextField.frame.size.width + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
@@ -199,13 +212,13 @@ The following expression can be used to validate against all card types, regardl
     self.cvcTextField.backgroundColor = [UIColor clearColor];
     self.cvcTextField.adjustsFontSizeToFitWidth = YES;
     self.cvcTextField.delegate = self;
-    self.cvcTextField.hidden = YES;
     self.cvcTextField.inputAccessoryView = self.accessoryToolBar;
     self.cvcTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     self.cvcTextField.keyboardType = UIKeyboardTypeNumberPad;
     [self.cvcTextField addTarget:self action:@selector(cvcTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
     
-    [self addSubview:self.cvcTextField];
+    //[self addSubview:self.cvcTextField];
+    [self.scrollContainer addSubview:self.cvcTextField];
     
     self.zipTextField = [[UITextField alloc] initWithFrame:CGRectMake(self.cvcTextField.frame.origin.x + self.cvcTextField.frame.size.width + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
     //self.zipTextField.backgroundColor = [UIColor greenColor];
@@ -219,8 +232,22 @@ The following expression can be used to validate against all card types, regardl
     [self.zipTextField addTarget:self action:@selector(zipTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
     [self addSubview:self.zipTextField];
     
+    // Add cardholder's name
+    self.nameTextField = [[UITextField alloc] initWithFrame:CGRectMake((self.scrollContainer.frame.size.width * (_pages - 1)) + padding, self.cardNumberTextField.frame.origin.y, self.scrollContainer.frame.size.width, self.scrollContainer.frame.size.height)];
+    self.nameTextField.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForCardNumber];
+    self.nameTextField.delegate = self;
+    self.nameTextField.adjustsFontSizeToFitWidth = YES;
+    self.nameTextField.keyboardType = UIKeyboardTypeAlphabet;
+    self.nameTextField.returnKeyType = UIReturnKeyNext;
+    self.nameTextField.backgroundColor = [UIColor clearColor];
+    self.nameTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    self.nameTextField.inputAccessoryView = self.accessoryToolBar;
+    [self.nameTextField addTarget:self action:@selector(nameTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
+    [self.scrollContainer addSubview:self.nameTextField];
+    //[self addSubview:self.nameTextField];
+    
+    
     [self updateDefaultFonts];
-
 }
 
 - (void)adjustFields {
@@ -236,6 +263,60 @@ The following expression can be used to validate against all card types, regardl
         [self.zipTextField setFrame:CGRectMake(self.cvcTextField.frame.origin.x + self.cvcTextField.frame.size.width + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
 }
 
+
+#pragma mark UIScrollViewDelegate methods
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    CGFloat pageWidth = self.scrollContainer.frame.size.width;
+    float fractionalPage = scrollView.contentOffset.x / pageWidth;
+    NSInteger page = lround(fractionalPage);
+    NSLog(@"current page is %d", _currentPage);
+    if (_currentPage != page) {
+        _currentPage = page;
+    }
+    
+    if (_currentPage == 0) {
+        if (self.nameFieldType == OKNameFieldFirst) {
+            [self.nameTextField becomeFirstResponder];
+        } else {
+            [self.cardNumberTextField becomeFirstResponder];
+        }
+    } else if (_currentPage == 1) {
+        if (self.nameFieldType == OKNameFieldFirst) {
+            [self.cardNumberTextField becomeFirstResponder];
+        } else {
+            [self.expirationTextField becomeFirstResponder];
+        }
+    } else if (_currentPage == 2) {
+        if (self.nameFieldType == OKNameFieldFirst) {
+            
+        } else {
+            [self.nameTextField becomeFirstResponder];
+        }
+    }
+    
+    NSLog(@"current page is %d", _currentPage);
+}
+
+- (void)scrollToNext {
+    _currentPage++;
+    float width = self.scrollContainer.frame.size.width;
+    NSLog(@"scrolling to %f page %d", width, _currentPage);
+    [self.scrollContainer setContentOffset:CGPointMake(width * _currentPage, 0.0f) animated:YES];
+}
+
+- (void)scrollToPrevious {
+    _currentPage--;
+    float width = self.scrollContainer.frame.size.width;
+    NSLog(@"scrolling to %f page %d", width, _currentPage);
+    [self.scrollContainer setContentOffset:CGPointMake(width * _currentPage, 0.0f) animated:YES];
+}
+
+- (void)scrollToPage:(NSInteger)page {
+    NSLog(@"scrolling to page %d", page);
+    _currentPage = page;
+    float width = self.scrollContainer.frame.size.width;
+    [self.scrollContainer setContentOffset:CGPointMake(width * page, 0.0f) animated:YES];
+}
 
 #pragma mark - Setters for updating placholders when client overrides defaults
 - (void)setYearPlaceholder:(NSString *)yearPlaceholder {
@@ -287,10 +368,10 @@ The following expression can be used to validate against all card types, regardl
     _nameFieldType = nameFieldType;
     if (nameFieldType == OKNameFieldFirst) {
         self.nameTextField.returnKeyType = UIReturnKeyNext;
-        [self setupName];
+        //[self setupName];
     } else {
         self.nameTextField.returnKeyType = UIReturnKeyDone;
-        [self setupCardNumber];
+        //[self setupCardNumber];
     }
 }
 
@@ -316,6 +397,12 @@ The following expression can be used to validate against all card types, regardl
 
 - (NSString *)getFormattedExpiration {
     return [NSString stringWithFormat:@"%@%@%@", self.cardMonth, self.monthYearSeparator, self.cardYear];
+}
+
+
+- (void)setCardName:(NSString *)cardName {
+    self.nameTextField.text = cardName;
+    _cardName = cardName;
 }
 
 // If the user defined font is within the maximum for a particular field, take
@@ -346,25 +433,6 @@ The following expression can be used to validate against all card types, regardl
     self.nameTextField.placeholder = self.namePlaceholder;
 }
 
-#pragma mark - 
-- (void)setupBackSide {
-    self.cardNumberTextField.hidden = self.nameTextField.hidden = YES;
-    self.lastFourLabel.hidden = self.expirationTextField.hidden = self.cvcTextField.hidden = NO;
-    if (self.includeZipCode)
-        self.zipTextField.hidden = NO;
-    
-    self.lastFourLabel.text = self.lastFour;
-}
-
-- (void)setupCardNumber {
-    self.lastFourLabel.hidden = self.expirationTextField.hidden = self.cvcTextField.hidden = self.zipTextField.hidden = self.nameTextField.hidden = YES;
-    self.cardNumberTextField.hidden = NO;
-}
-
-- (void)setupName {
-    self.lastFourLabel.hidden = self.expirationTextField.hidden = self.cvcTextField.hidden = self.zipTextField.hidden = self.cardNumberTextField.hidden = YES;
-    self.nameTextField.hidden = NO;
-}
 
 #pragma mark - InputAccessory actions
 - (IBAction)next:(id)sender {
@@ -381,8 +449,8 @@ The following expression can be used to validate against all card types, regardl
                     [self.delegate nameFieldDidEndEditing];
                 }
             } else {
-                [self setupCardNumber];
                 [self.cardNumberTextField becomeFirstResponder];
+                [self scrollToNext];
             }
         } else {
             [self hintForInvalidStep:invalidField];
@@ -390,18 +458,17 @@ The following expression can be used to validate against all card types, regardl
     } else if (self.activeTextField == self.cardNumberTextField) {
         if (![self isValidCardNumber]){
             [self hintForInvalidStep:OKPaymentStepCCNumber];
-            return;
         }
-        [self setupBackSide];
         [self.expirationTextField becomeFirstResponder];
+        [self scrollToNext];
     } else if (self.activeTextField == self.expirationTextField) {
         [self.cvcTextField becomeFirstResponder];
     } else if (self.activeTextField == self.cvcTextField) {
         if (self.includeZipCode) {
             [self.zipTextField becomeFirstResponder];
         } else if (self.nameFieldType == OKNameFieldLast) {
-            [self setupName];
             [self.nameTextField becomeFirstResponder];
+            [self scrollToNext];
         } else {
             if ([self.delegate respondsToSelector:@selector(formDidBecomeValid)] && isValid){
                 [self.delegate formDidBecomeValid];
@@ -409,8 +476,8 @@ The following expression can be used to validate against all card types, regardl
         }
     } else if (self.activeTextField == self.zipTextField && isValid) {
         if (self.nameFieldType == OKNameFieldLast) {
-            [self setupName];
             [self.nameTextField becomeFirstResponder];
+            [self scrollToNext];
         } else {
             if ([self.delegate respondsToSelector:@selector(formDidBecomeValid)]){
                 [self.delegate formDidBecomeValid];
@@ -422,23 +489,24 @@ The following expression can be used to validate against all card types, regardl
 
 - (IBAction)previous:(id)sender {
     if (self.activeTextField == self.cardNumberTextField && self.nameFieldType == OKNameFieldFirst) {
-        [self setupName];
         [self.nameTextField becomeFirstResponder];
+        [self scrollToPrevious];
     } else if (self.activeTextField == self.expirationTextField) {
-        [self setupCardNumber];
         [self.cardNumberTextField becomeFirstResponder];
+        [self scrollToPrevious];
     } else if (self.activeTextField == self.cvcTextField) {
         [self.expirationTextField becomeFirstResponder];
     } else if (self.activeTextField == self.zipTextField) {
         [self.cvcTextField becomeFirstResponder];
     } else if (self.activeTextField == self.nameTextField) {
         if (self.nameFieldType == OKNameFieldLast) {
-            [self setupBackSide];
+            //[self setupBackSide];
             if (self.includeZipCode) {
                 [self.zipTextField becomeFirstResponder];
             } else {
                 [self.cvcTextField becomeFirstResponder];
             }
+            [self scrollToPrevious];
         }
     }
 }
@@ -446,6 +514,7 @@ The following expression can be used to validate against all card types, regardl
 - (IBAction)done:(id)sender {
     OKPaymentStep invalidField;
     BOOL isValid = [self isValid:&invalidField];
+    NSLog(@"invalid field is %d", invalidField);
     if (isValid) {
         if ([self.delegate respondsToSelector:@selector(formDidBecomeValid)]){
             [self.delegate formDidBecomeValid];
@@ -470,8 +539,6 @@ The following expression can be used to validate against all card types, regardl
 - (void)removeAccessoryToolbar {
     self.nameTextField.inputAccessoryView = self.cardNumberTextField.inputAccessoryView = self.expirationTextField.inputAccessoryView = self.cvcTextField.inputAccessoryView = self.zipTextField.inputAccessoryView = nil;
 }
-
-
 
 #pragma mark - UITextFieldDelegate methods
 
@@ -687,7 +754,14 @@ The following expression can be used to validate against all card types, regardl
         [self resetFieldState];
     
     self.trimmedNumber = [self.cardNumberTextField.text stringByReplacingOccurrencesOfString:@" " withString:@""];
-    //NSLog(@"trimmed NUmber %@", self.trimmedNumber);
+    _cardNumber = self.trimmedNumber;
+    NSLog(@"trimmed NUmber %@", self.trimmedNumber);
+    
+    if (self.trimmedNumber.length > 3) {
+        self.lastFourLabel.text = [self.cardNumber substringFromIndex: [self.trimmedNumber length] - 4];
+    }
+    
+
     
     if (self.cardType == OKCArdTypeMastercard) {
         if (self.trimmedNumber.length == 16 && [self isValidCardNumber]) {
@@ -706,6 +780,8 @@ The following expression can be used to validate against all card types, regardl
     } else if (self.cardNumberTextField.text.length > 2 && [self isValidCardNumber]) {
         [self next:self];
     }
+    
+
     
 }
 
@@ -726,34 +802,37 @@ The following expression can be used to validate against all card types, regardl
     
     switch (invalidField) {
         case OKPaymentStepCCNumber:
-            [self setupCardNumber];
             [self.cardNumberTextField becomeFirstResponder];
-            [self invalidFieldState];
+            if (self.nameFieldType == OKNameFieldNone || self.nameFieldType == OKNameFieldLast) {
+                [self scrollToPage:0];
+            } else {
+                [self scrollToPage:1];
+            }
             break;
         case OKPaymentStepExpiration:
-            [self setupBackSide];
             [self.expirationTextField becomeFirstResponder];
-            [self invalidFieldState];
+            [self scrollToPage:self.nameFieldType + 1];
             break;
         case OKPaymentStepSecurityCode:
-            [self setupBackSide];
             [self.cvcTextField becomeFirstResponder];
-            [self invalidFieldState];
+            [self scrollToPage:self.nameFieldType + 1];
             break;
         case OKPaymentStepZip:
-            [self setupBackSide];
             [self.zipTextField becomeFirstResponder];
-            [self invalidFieldState];
+            [self scrollToPage:self.nameFieldType + 1];
             break;
         case OKPaymentStepName:
-            [self setupName];
             [self.nameTextField becomeFirstResponder];
-            [self invalidFieldState];
+            if (self.nameFieldType == OKNameFieldFirst) {
+                [self scrollToPage:0];
+            } else {
+                [self scrollToPage:2];
+            }
             break;
         default:
             break;
     }
-    
+    [self invalidFieldState];
 }
 
 - (BOOL)isValid:(OKPaymentStep *)invalidStep {
@@ -783,9 +862,7 @@ The following expression can be used to validate against all card types, regardl
         return NO;
     }
 
-    
     return YES;
-
 }
 
 - (BOOL)isValidCardNumber {

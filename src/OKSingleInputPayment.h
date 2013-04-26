@@ -50,7 +50,7 @@ typedef enum {
 
 @protocol OKSingleInputPaymentDelegate;
 
-@interface OKSingleInputPayment : UIView <UITextFieldDelegate>
+@interface OKSingleInputPayment : UIView <UITextFieldDelegate, UIScrollViewDelegate>
 
 @property (strong, readonly) NSString *cardNumber;
 @property (strong, readonly) NSString *cardCvc;
@@ -58,7 +58,7 @@ typedef enum {
 @property (strong, readonly) NSString *cardYear;
 @property (strong, readonly, getter = getFormattedExpiration) NSString *formattedExpiration;
 @property (strong, readonly) NSString *cardZip;
-@property (strong, readonly) NSString *cardName;
+@property (strong, nonatomic) NSString *cardName;
 @property (strong, nonatomic, readonly) UIToolbar *accessoryToolBar;
 
 @property (readonly) BOOL isValid;

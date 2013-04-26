@@ -26,13 +26,15 @@
     self.currentStep.text = @"";
     self.singlePayment.includeZipCode = NO;
     self.singlePayment.nameFieldType = OKNameFieldLast;
-    self.singlePayment.useInputAccessory = NO;
+    self.singlePayment.useInputAccessory = YES;
 
     self.singlePayment.defaultFont = [UIFont fontWithName:@"Helvetica" size:13];
     self.singlePayment.previousButton.title = NSLocalizedString(@"назад", @"Move to the previous input");
     self.singlePayment.nextButton.title = NSLocalizedString(@"вперед", @"Move to the next input");
     self.singlePayment.doneButton.title = NSLocalizedString(@"Готово", @"Form is finished button");
     self.singlePayment.defaultFontColor = [UIColor blueColor];
+    
+    self.singlePayment.cardName = @"Ryan Romanchuk";
     //OKSingleInputPayment *inputField = [[OKSingleInputPayment alloc] initWithFrame:CGRectMake(20, 120, 280, 50)];
     //[self.view addSubview:inputField];
 

@@ -452,13 +452,8 @@ The following expression can be used to validate against all card types, regardl
                 [self.cardNumberTextField becomeFirstResponder];
                 [self scrollToNext];
             }
-        } else {
-            [self hintForInvalidStep:invalidField];
         }
     } else if (self.activeTextField == self.cardNumberTextField) {
-        if (![self isValidCardNumber]){
-            [self hintForInvalidStep:OKPaymentStepCCNumber];
-        }
         [self.expirationTextField becomeFirstResponder];
         [self scrollToNext];
     } else if (self.activeTextField == self.expirationTextField) {
@@ -811,7 +806,11 @@ The following expression can be used to validate against all card types, regardl
             break;
         case OKPaymentStepExpiration:
             [self.expirationTextField becomeFirstResponder];
-            [self scrollToPage:self.nameFieldType + 1];
+            if (self.nameFieldType == OKNameFieldNone || self.nameFieldType == OKNameFieldLast) {
+                [self scrollToPage:1];
+            } else {
+                [self scrollToPage:2];
+            }
             break;
         case OKPaymentStepSecurityCode:
             [self.cvcTextField becomeFirstResponder];
@@ -866,32 +865,32 @@ The following expression can be used to validate against all card types, regardl
 }
 
 - (BOOL)isValidCardNumber {
+    NSLog(@"is valid card number");
     if (self.cardType == OKCardTypeUnknown) {
-        [self invalidFieldState];
+        NSLog(@"unkown card");
         return NO;
     } else if ( self.cardType == OKCardTypeVisa) {
         if (self.trimmedNumber.length == 16 && ![self.trimmedNumber luhnCheck]) {
-            [self invalidFieldState];
             return NO;
         } else if (![self.trimmedNumber luhnCheck]) {
             return NO;
         }
     } else if (self.cardType == OKCArdTypeMastercard) {
         if (![self.trimmedNumber luhnCheck]) {
-            [self invalidFieldState];
             return NO;
         }
     } else if (self.cardType == OKCardTypeAmericanExpress) {
         if (self.trimmedNumber.length == 15 && ![self.trimmedNumber luhnCheck]) {
-            [self invalidFieldState];
             return NO;
         }
     } else if (self.cardType == OKCardTypeDiscover) {
         if (self.trimmedNumber.length == 16 && ![self.trimmedNumber luhnCheck]) {
-            [self invalidFieldState];
             return NO;
         }
     }
+    
+    NSLog(@"card number is valid");
+
     
     _cardNumber = self.trimmedNumber;
     self.lastFour = [self.cardNumber substringFromIndex: [self.cardNumber length] - 4];
@@ -903,7 +902,6 @@ The following expression can be used to validate against all card types, regardl
     if (self.expirationTextField.text.length == 5 && [self.cardMonth integerValue] < 13 && [self.cardMonth integerValue] > 0 && [self.cardYear integerValue] >= self.minYear && [self.cardYear integerValue] <= self.maxYear) {
         return YES;
     }
-    [self invalidFieldState];
     return NO;
 }
 

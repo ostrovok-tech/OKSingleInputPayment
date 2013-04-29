@@ -103,8 +103,5 @@ Drag a UIView into your scene and add the custom class OKSingleInputPayment, wir
 ```
 
 ## Todo
-* Support all types of cards 
-* Allow previous field movement by deletion 
-* Figure out a better way to retreive cardholder's name 
 * DRY up code
 * Use smarter formatters 

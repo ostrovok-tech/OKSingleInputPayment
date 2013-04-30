@@ -174,6 +174,23 @@ The following expression can be used to validate against all card types, regardl
     [self.scrollContainer addSubview:self.cardNumberTextField];
     
     
+    //[self addSubview:self.cardNumberTextField];
+    [self addSubview:self.leftCardView];
+    
+    maximumWidthSpace = self.frame.size.width - ((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + (padding * numberOfFields));
+    widthPerField = maximumWidthSpace / numberOfFields;
+    // Last four label
+    [@"12345" sizeWithFont:self.defaultFont minFontSize:self.cardNumberTextField.minimumFontSize actualFontSize:&maximumFontForFields forWidth:widthPerField lineBreakMode:NSLineBreakByClipping];
+    //self.lastFourLabel = [[UILabel alloc] initWithFrame:CGRectMake((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
+    self.lastFourLabel = [[UILabel alloc] initWithFrame:CGRectMake((self.cardNumberTextField.frame.origin.x + self.cardNumberTextField.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
+    //self.lastFourLabel.backgroundColor = [UIColor greenColor];
+    self.lastFourLabel.backgroundColor = [UIColor clearColor];
+    self.lastFourLabel.adjustsFontSizeToFitWidth = YES;
+    UITapGestureRecognizer *tg = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(previous:)];
+    [self.lastFourLabel addGestureRecognizer:tg];
+    self.lastFourLabel.userInteractionEnabled = YES;
+    [self.scrollContainer addSubview:self.lastFourLabel];
+    
     float expFieldsWidth = (widthPerField / 2) - padding;
     self.monthExpirationTextField = [[OKDeletableTextField alloc] initWithFrame:CGRectMake((self.lastFourLabel.frame.origin.x + self.lastFourLabel.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, expFieldsWidth, self.cardNumberTextField.frame.size.height)];
     self.monthExpirationTextField.okTextFieldDelegate = self;

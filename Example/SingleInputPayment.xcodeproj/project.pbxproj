@@ -30,6 +30,7 @@
 		9484988616CD1248000083DE /* photo-reject.png in Resources */ = {isa = PBXBuildFile; fileRef = 9484988216CD1248000083DE /* photo-reject.png */; };
 		9484988716CD1248000083DE /* photo-reject@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9484988316CD1248000083DE /* photo-reject@2x.png */; };
 		948498B316CE2EFE000083DE /* NSString+CCValidation.m in Sources */ = {isa = PBXBuildFile; fileRef = 948498B216CE2EFE000083DE /* NSString+CCValidation.m */; };
+		94BFC640172EA0AC00A3625B /* OKDeletableTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 94BFC63F172EA0AC00A3625B /* OKDeletableTextField.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,6 +75,8 @@
 		9484988316CD1248000083DE /* photo-reject@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "photo-reject@2x.png"; path = "assets/photo-reject@2x.png"; sourceTree = "<group>"; };
 		948498B116CE2EFD000083DE /* NSString+CCValidation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+CCValidation.h"; sourceTree = "<group>"; };
 		948498B216CE2EFE000083DE /* NSString+CCValidation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+CCValidation.m"; sourceTree = "<group>"; };
+		94BFC63E172EA0AC00A3625B /* OKDeletableTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKDeletableTextField.h; sourceTree = "<group>"; };
+		94BFC63F172EA0AC00A3625B /* OKDeletableTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKDeletableTextField.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -197,6 +200,8 @@
 				9484987C16CCEF1D000083DE /* OKSingleInputPayment.m */,
 				948498B116CE2EFD000083DE /* NSString+CCValidation.h */,
 				948498B216CE2EFE000083DE /* NSString+CCValidation.m */,
+				94BFC63E172EA0AC00A3625B /* OKDeletableTextField.h */,
+				94BFC63F172EA0AC00A3625B /* OKDeletableTextField.m */,
 			);
 			name = src;
 			path = ../../src;
@@ -322,6 +327,7 @@
 				946DDCD616BBFA4400EFDBCF /* ViewController.m in Sources */,
 				9484987F16CCEF1D000083DE /* OKSingleInputPayment.m in Sources */,
 				948498B316CE2EFE000083DE /* NSString+CCValidation.m in Sources */,
+				94BFC640172EA0AC00A3625B /* OKDeletableTextField.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

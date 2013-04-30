@@ -21,11 +21,13 @@
 */
 
 #import <UIKit/UIKit.h>
+#import "OKDeletableTextField.h"
 
 typedef enum {
     OKPaymentStepName,
     OKPaymentStepCCNumber,
-    OKPaymentStepExpiration,
+    OKPaymentStepExpirationMonth,
+    OKPaymentStepExpirationYear,
     OKPaymentStepSecurityCode,
     OKPaymentStepZip
 } OKPaymentStep;
@@ -50,7 +52,7 @@ typedef enum {
 
 @protocol OKSingleInputPaymentDelegate;
 
-@interface OKSingleInputPayment : UIView <UITextFieldDelegate, UIScrollViewDelegate>
+@interface OKSingleInputPayment : UIView <UITextFieldDelegate, UIScrollViewDelegate, OKDeletableTextFieldDelegate>
 
 @property (strong, readonly) NSString *cardNumber;
 @property (strong, readonly) NSString *cardCvc;

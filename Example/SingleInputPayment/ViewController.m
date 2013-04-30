@@ -50,8 +50,11 @@
         case OKPaymentStepCCNumber:
             self.currentStep.text = @"Card Number";
             break;
-        case OKPaymentStepExpiration:
-            self.currentStep.text = @"Expiration Info";
+        case OKPaymentStepExpirationMonth:
+            self.currentStep.text = @"Expiration month";
+            break;
+        case OKPaymentStepExpirationYear:
+            self.currentStep.text = @"Expiration Year";
             break;
         case OKPaymentStepSecurityCode:
             self.currentStep.text = @"CVC code";

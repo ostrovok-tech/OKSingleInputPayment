@@ -38,15 +38,17 @@ The following expression can be used to validate against all card types, regardl
     BOOL _fieldInvalid;
 }
 
-@property (strong, nonatomic) UITextField *nameTextField;
-@property (strong, nonatomic) UITextField *cardNumberTextField;
-@property (strong, nonatomic) UITextField *expirationTextField;
-@property (strong, nonatomic) UITextField *cvcTextField;
-@property (strong, nonatomic) UITextField *zipTextField;
+@property (strong, nonatomic) OKDeletableTextField *nameTextField;
+@property (strong, nonatomic) OKDeletableTextField *cardNumberTextField;
+@property (strong, nonatomic) OKDeletableTextField *monthExpirationTextField;
+@property (strong, nonatomic) UILabel *expirationSeparator;
+@property (strong, nonatomic) OKDeletableTextField *yearExpirationTextField;
+
+@property (strong, nonatomic) OKDeletableTextField *cvcTextField;
+@property (strong, nonatomic) OKDeletableTextField *zipTextField;
+
 @property (strong, nonatomic) UILabel *lastFourLabel;
 @property (strong, nonatomic) UIScrollView *scrollContainer;
-
-
 
 @property (strong, nonatomic) NSString *trimmedNumber;
 @property (strong, nonatomic) NSString *lastFour;
@@ -153,8 +155,8 @@ The following expression can be used to validate against all card types, regardl
 
     [self addSubview:self.scrollContainer];
     
-    self.cardNumberTextField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, self.scrollContainer.frame.size.width, self.scrollContainer.frame.size.height)];
-    
+    self.cardNumberTextField = [[OKDeletableTextField alloc] initWithFrame:CGRectMake(0, 0, self.scrollContainer.frame.size.width, self.scrollContainer.frame.size.height)];
+    self.cardNumberTextField.okTextFieldDelegate = self;
     
     //self.cardNumberTextField = [[UITextField alloc] initWithFrame:CGRectMake((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding, (self.frame.size.height / 2) - ((self.frame.size.height * 0.9) /2), self.frame.size.width - ((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding) - 5, self.frame.size.height * 0.9)];
     [self.numberPlaceholder sizeWithFont:self.defaultFont minFontSize:self.cardNumberTextField.minimumFontSize actualFontSize:&maximumFontForCardNumber forWidth:self.cardNumberTextField.frame.size.width lineBreakMode:NSLineBreakByClipping];
@@ -172,8 +174,7 @@ The following expression can be used to validate against all card types, regardl
     [self.scrollContainer addSubview:self.cardNumberTextField];
     
     
-    
-        //[self addSubview:self.cardNumberTextField];
+    //[self addSubview:self.cardNumberTextField];
     [self addSubview:self.leftCardView];
     
     maximumWidthSpace = self.frame.size.width - ((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + (padding * numberOfFields));
@@ -193,21 +194,54 @@ The following expression can be used to validate against all card types, regardl
     [self.scrollContainer addSubview:self.lastFourLabel];
     
     
+    float expFieldsWidth = widthPerField / 2;
+    self.monthExpirationTextField = [[OKDeletableTextField alloc] initWithFrame:CGRectMake((self.lastFourLabel.frame.origin.x + self.lastFourLabel.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, expFieldsWidth, self.cardNumberTextField.frame.size.height)];
+    self.monthExpirationTextField.okTextFieldDelegate = self;
+    self.monthExpirationTextField.backgroundColor = [UIColor clearColor];
+    self.monthExpirationTextField.adjustsFontSizeToFitWidth = YES;
+    self.monthExpirationTextField.delegate = self;
+    self.monthExpirationTextField.inputAccessoryView = self.accessoryToolBar;
+    self.monthExpirationTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    self.monthExpirationTextField.keyboardType = UIKeyboardTypeNumberPad;
+    [self.monthExpirationTextField addTarget:self action:@selector(expirationMonthTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
+
+    self.expirationSeparator = [[UILabel alloc] initWithFrame:CGRectMake((self.monthExpirationTextField.frame.origin.x + self.monthExpirationTextField.frame.size.width) - 8, self.cardNumberTextField.frame.origin.y, 4, self.cardNumberTextField.frame.size.height)];
+    self.expirationSeparator.text = @"/";
+    self.expirationSeparator.backgroundColor = [UIColor clearColor];
+    //self.expirationSeparator.text si
+    self.expirationSeparator.textAlignment = NSTextAlignmentCenter;
+    //[self.expirationSeparator sizeToFit];
     
-    self.expirationTextField = [[UITextField alloc] initWithFrame:CGRectMake((self.lastFourLabel.frame.origin.x + self.lastFourLabel.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
-    //self.expirationTextField.backgroundColor = [UIColor greenColor];
-    self.expirationTextField.backgroundColor = [UIColor clearColor];
-    self.expirationTextField.adjustsFontSizeToFitWidth = YES;
-    self.expirationTextField.delegate = self;
-    self.expirationTextField.inputAccessoryView = self.accessoryToolBar;
-    self.expirationTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-    self.expirationTextField.keyboardType = UIKeyboardTypeNumberPad;
-    [self.expirationTextField addTarget:self action:@selector(expirationTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
-    [self.scrollContainer addSubview:self.expirationTextField];
+    self.yearExpirationTextField = [[OKDeletableTextField alloc] initWithFrame:CGRectMake((self.monthExpirationTextField.frame.origin.x + self.monthExpirationTextField.frame.size.width), self.cardNumberTextField.frame.origin.y, expFieldsWidth, self.cardNumberTextField.frame.size.height)];
+    self.yearExpirationTextField.okTextFieldDelegate = self;
+    self.yearExpirationTextField.backgroundColor = [UIColor clearColor];
+    self.yearExpirationTextField.adjustsFontSizeToFitWidth = YES;
+    self.yearExpirationTextField.delegate = self;
+    self.yearExpirationTextField.inputAccessoryView = self.accessoryToolBar;
+    self.yearExpirationTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    self.yearExpirationTextField.keyboardType = UIKeyboardTypeNumberPad;
+    [self.yearExpirationTextField addTarget:self action:@selector(expirationYearTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
+    
+//    self.expirationTextField = [[UITextField alloc] initWithFrame:CGRectMake((self.lastFourLabel.frame.origin.x + self.lastFourLabel.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
+//    //self.expirationTextField.backgroundColor = [UIColor greenColor];
+//    self.expirationTextField.backgroundColor = [UIColor clearColor];
+//    self.expirationTextField.adjustsFontSizeToFitWidth = YES;
+//    self.expirationTextField.delegate = self;
+//    self.expirationTextField.inputAccessoryView = self.accessoryToolBar;
+//    self.expirationTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+//    self.expirationTextField.keyboardType = UIKeyboardTypeNumberPad;
+//    [self.expirationTextField addTarget:self action:@selector(expirationTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
+    
+    [self.scrollContainer addSubview:self.monthExpirationTextField];
+    [self.scrollContainer addSubview:self.yearExpirationTextField];
+    [self.scrollContainer addSubview:self.expirationSeparator];
+
+
     //[self addSubview:self.expirationTextField];
     
     
-    self.cvcTextField = [[UITextField alloc] initWithFrame:CGRectMake(self.expirationTextField.frame.origin.x + self.expirationTextField.frame.size.width + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
+    self.cvcTextField = [[OKDeletableTextField alloc] initWithFrame:CGRectMake(self.yearExpirationTextField.frame.origin.x + self.yearExpirationTextField.frame.size.width + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
+    self.cvcTextField.okTextFieldDelegate = self;
     //self.cvcTextField.backgroundColor = [UIColor greenColor];
     self.cvcTextField.backgroundColor = [UIColor clearColor];
     self.cvcTextField.adjustsFontSizeToFitWidth = YES;
@@ -220,7 +254,8 @@ The following expression can be used to validate against all card types, regardl
     //[self addSubview:self.cvcTextField];
     [self.scrollContainer addSubview:self.cvcTextField];
     
-    self.zipTextField = [[UITextField alloc] initWithFrame:CGRectMake(self.cvcTextField.frame.origin.x + self.cvcTextField.frame.size.width + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
+    self.zipTextField = [[OKDeletableTextField alloc] initWithFrame:CGRectMake(self.cvcTextField.frame.origin.x + self.cvcTextField.frame.size.width + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
+    self.zipTextField.okTextFieldDelegate = self;
     //self.zipTextField.backgroundColor = [UIColor greenColor];
     self.zipTextField.backgroundColor = [UIColor clearColor];
     self.zipTextField.adjustsFontSizeToFitWidth = YES;
@@ -233,7 +268,8 @@ The following expression can be used to validate against all card types, regardl
     [self addSubview:self.zipTextField];
     
     // Add cardholder's name
-    self.nameTextField = [[UITextField alloc] initWithFrame:CGRectMake((self.scrollContainer.frame.size.width * (_pages - 1)) + padding, self.cardNumberTextField.frame.origin.y, self.scrollContainer.frame.size.width, self.scrollContainer.frame.size.height)];
+    self.nameTextField = [[OKDeletableTextField alloc] initWithFrame:CGRectMake((self.scrollContainer.frame.size.width * (_pages - 1)) + padding, self.cardNumberTextField.frame.origin.y, self.scrollContainer.frame.size.width, self.scrollContainer.frame.size.height)];
+    self.nameTextField.okTextFieldDelegate = self;
     self.nameTextField.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForCardNumber];
     self.nameTextField.delegate = self;
     self.nameTextField.adjustsFontSizeToFitWidth = YES;
@@ -257,8 +293,10 @@ The following expression can be used to validate against all card types, regardl
     [@"12345" sizeWithFont:self.defaultFont minFontSize:self.cardNumberTextField.minimumFontSize actualFontSize:&maximumFontForFields forWidth:widthPerField lineBreakMode:NSLineBreakByClipping];
     
     [self.lastFourLabel setFrame:CGRectMake((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
-    [self.expirationTextField setFrame:CGRectMake((self.lastFourLabel.frame.origin.x + self.lastFourLabel.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
-    [self.cvcTextField setFrame:CGRectMake(self.expirationTextField.frame.origin.x + self.expirationTextField.frame.size.width + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
+    [self.monthExpirationTextField setFrame:CGRectMake((self.lastFourLabel.frame.origin.x + self.lastFourLabel.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
+    [self.yearExpirationTextField setFrame:CGRectMake((self.lastFourLabel.frame.origin.x + self.lastFourLabel.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
+
+    [self.cvcTextField setFrame:CGRectMake(self.yearExpirationTextField.frame.origin.x + self.yearExpirationTextField.frame.size.width + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
     if (self.includeZipCode)
         [self.zipTextField setFrame:CGRectMake(self.cvcTextField.frame.origin.x + self.cvcTextField.frame.size.width + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
 }
@@ -269,7 +307,6 @@ The following expression can be used to validate against all card types, regardl
     CGFloat pageWidth = self.scrollContainer.frame.size.width;
     float fractionalPage = scrollView.contentOffset.x / pageWidth;
     NSInteger page = lround(fractionalPage);
-    NSLog(@"current page is %d", _currentPage);
     if (_currentPage != page) {
         _currentPage = page;
     }
@@ -284,7 +321,7 @@ The following expression can be used to validate against all card types, regardl
         if (self.nameFieldType == OKNameFieldFirst) {
             [self.cardNumberTextField becomeFirstResponder];
         } else {
-            [self.expirationTextField becomeFirstResponder];
+            [self.monthExpirationTextField becomeFirstResponder];
         }
     } else if (_currentPage == 2) {
         if (self.nameFieldType == OKNameFieldFirst) {
@@ -294,25 +331,24 @@ The following expression can be used to validate against all card types, regardl
         }
     }
     
-    NSLog(@"current page is %d", _currentPage);
 }
 
 - (void)scrollToNext {
     _currentPage++;
     float width = self.scrollContainer.frame.size.width;
-    NSLog(@"scrolling to %f page %d", width, _currentPage);
+    //NSLog(@"scrolling to %f page %d", width, _currentPage);
     [self.scrollContainer setContentOffset:CGPointMake(width * _currentPage, 0.0f) animated:YES];
 }
 
 - (void)scrollToPrevious {
     _currentPage--;
     float width = self.scrollContainer.frame.size.width;
-    NSLog(@"scrolling to %f page %d", width, _currentPage);
+    //NSLog(@"scrolling to %f page %d", width, _currentPage);
     [self.scrollContainer setContentOffset:CGPointMake(width * _currentPage, 0.0f) animated:YES];
 }
 
 - (void)scrollToPage:(NSInteger)page {
-    NSLog(@"scrolling to page %d", page);
+    //NSLog(@"scrolling to page %d", page);
     _currentPage = page;
     float width = self.scrollContainer.frame.size.width;
     [self.scrollContainer setContentOffset:CGPointMake(width * page, 0.0f) animated:YES];
@@ -412,7 +448,7 @@ The following expression can be used to validate against all card types, regardl
     CGFloat newFieldFontSize = (maximumFontForFields > self.defaultFont.pointSize) ? self.defaultFont.pointSize : maximumFontForFields;
     
     self.nameTextField.font = self.cardNumberTextField.font = [self fontWithNewSize:self.defaultFont newSize:newCardFontSize];
-    self.lastFourLabel.font = self.expirationTextField.font = self.cvcTextField.font = self.zipTextField.font = [self fontWithNewSize:self.defaultFont newSize:newFieldFontSize];
+    self.lastFourLabel.font = self.monthExpirationTextField.font = self.yearExpirationTextField.font  = self.expirationSeparator.font = self.cvcTextField.font = self.zipTextField.font = [self fontWithNewSize:self.defaultFont newSize:newFieldFontSize];
 }
 
 - (UIFont *)fontWithNewSize:(UIFont *)font newSize:(CGFloat)pointSize {
@@ -422,11 +458,12 @@ The following expression can be used to validate against all card types, regardl
 }
 
 - (void)updateFontColors {
-    self.nameTextField.textColor = self.cardNumberTextField.textColor = self.lastFourLabel.textColor = self.expirationTextField.textColor = self.cvcTextField.textColor = self.zipTextField.textColor = self.defaultFontColor;
+    self.nameTextField.textColor = self.cardNumberTextField.textColor = self.lastFourLabel.textColor = self.monthExpirationTextField.textColor = self.yearExpirationTextField.textColor = self.cvcTextField.textColor = self.zipTextField.textColor = self.defaultFontColor;
 }
 
 - (void)updatePlaceholders {
-    self.expirationTextField.placeholder = [NSString stringWithFormat:@"%@%@%@", self.monthPlaceholder, self.monthYearSeparator, self.yearPlaceholder];
+    self.monthExpirationTextField.placeholder = self.monthPlaceholder;
+    self.yearExpirationTextField.placeholder = self.yearPlaceholder;
     self.cvcTextField.placeholder = self.cvcPlaceholder;
     self.zipTextField.placeholder = self.zipPlaceholder;
     self.cardNumberTextField.placeholder = self.numberPlaceholder;
@@ -454,9 +491,11 @@ The following expression can be used to validate against all card types, regardl
             }
         }
     } else if (self.activeTextField == self.cardNumberTextField) {
-        [self.expirationTextField becomeFirstResponder];
+        [self.monthExpirationTextField becomeFirstResponder];
         [self scrollToNext];
-    } else if (self.activeTextField == self.expirationTextField) {
+    } else if (self.activeTextField == self.monthExpirationTextField) {
+        [self.yearExpirationTextField becomeFirstResponder];
+    } else if (self.activeTextField == self.yearExpirationTextField) {
         [self.cvcTextField becomeFirstResponder];
     } else if (self.activeTextField == self.cvcTextField) {
         if (self.includeZipCode) {
@@ -486,11 +525,13 @@ The following expression can be used to validate against all card types, regardl
     if (self.activeTextField == self.cardNumberTextField && self.nameFieldType == OKNameFieldFirst) {
         [self.nameTextField becomeFirstResponder];
         [self scrollToPrevious];
-    } else if (self.activeTextField == self.expirationTextField) {
+    } else if(self.activeTextField == self.monthExpirationTextField) {
         [self.cardNumberTextField becomeFirstResponder];
         [self scrollToPrevious];
+    } else if (self.activeTextField == self.yearExpirationTextField) {
+        [self.monthExpirationTextField becomeFirstResponder];
     } else if (self.activeTextField == self.cvcTextField) {
-        [self.expirationTextField becomeFirstResponder];
+        [self.yearExpirationTextField becomeFirstResponder];
     } else if (self.activeTextField == self.zipTextField) {
         [self.cvcTextField becomeFirstResponder];
     } else if (self.activeTextField == self.nameTextField) {
@@ -509,7 +550,6 @@ The following expression can be used to validate against all card types, regardl
 - (IBAction)done:(id)sender {
     OKPaymentStep invalidField;
     BOOL isValid = [self isValid:&invalidField];
-    NSLog(@"invalid field is %d", invalidField);
     if (isValid) {
         if ([self.delegate respondsToSelector:@selector(formDidBecomeValid)]){
             [self.delegate formDidBecomeValid];
@@ -527,12 +567,12 @@ The following expression can be used to validate against all card types, regardl
     
     self.doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done:)];
     self.accessoryToolBar.items = @[self.previousButton, self.nextButton, flexibleSpace, self.doneButton];
-    self.cardNumberTextField.inputAccessoryView = self.expirationTextField.inputAccessoryView = self.cvcTextField.inputAccessoryView = self.zipTextField.inputAccessoryView = self.accessoryToolBar;
+    self.cardNumberTextField.inputAccessoryView = self.monthExpirationTextField.inputAccessoryView = self.yearExpirationTextField.inputAccessoryView = self.cvcTextField.inputAccessoryView = self.zipTextField.inputAccessoryView = self.accessoryToolBar;
 
 }
 
 - (void)removeAccessoryToolbar {
-    self.nameTextField.inputAccessoryView = self.cardNumberTextField.inputAccessoryView = self.expirationTextField.inputAccessoryView = self.cvcTextField.inputAccessoryView = self.zipTextField.inputAccessoryView = nil;
+    self.nameTextField.inputAccessoryView = self.cardNumberTextField.inputAccessoryView = self.monthExpirationTextField.inputAccessoryView = self.yearExpirationTextField.inputAccessoryView  = self.cvcTextField.inputAccessoryView = self.zipTextField.inputAccessoryView = nil;
 }
 
 #pragma mark - UITextFieldDelegate methods
@@ -547,8 +587,11 @@ The following expression can be used to validate against all card types, regardl
     } else if (textField == self.cvcTextField) {
         [self animateLeftView:OKCardTypeCvc];
         self.paymentStep = OKPaymentStepSecurityCode;
-    } else if (textField == self.expirationTextField) {
-        self.paymentStep = OKPaymentStepExpiration;
+    } else if (textField == self.monthExpirationTextField) {
+        self.paymentStep = OKPaymentStepExpirationMonth;
+        [self animateLeftView:self.cardType];
+    } else if (textField == self.yearExpirationTextField) {
+        self.paymentStep = OKPaymentStepExpirationYear;
         [self animateLeftView:self.cardType];
     } else if (textField == self.zipTextField) {
         self.paymentStep = OKPaymentStepZip;
@@ -604,7 +647,7 @@ The following expression can be used to validate against all card types, regardl
         return NO;
     
     // User is hitting the delete button on the last character of the field
-    if (textField.text.length == 1 && [string isEqualToString:@""]) {
+    if (textField.text.length == 0 && [string isEqualToString:@""]) {
         textField.text = nil;
         [self previous:self];
         return NO;
@@ -659,30 +702,22 @@ The following expression can be used to validate against all card types, regardl
             return NO;
         }
         
-    } else if (self.activeTextField == self.expirationTextField) {
-        if (textField.text.length == 5 && ![string isEqualToString:@""]) {
-            return NO;
-        }
-        
-        if ([string integerValue] > 1 && textField.text.length == 0 && ![string isEqualToString:@"0"]) {
-            textField.text = [@"0" stringByAppendingFormat:@"%@/", string];
+    } else if (self.activeTextField == self.monthExpirationTextField) {
+        if (textField.text.length == 2 && ![string isEqualToString:@""]) {
             return NO;
         }
         
         // If the first number is a one, the only valid
-        if (textField.text.length == 1 && [string integerValue] > 2) {
+        if ([textField.text integerValue] == 1 && [string integerValue] > 2) {
+            return NO;
+        } else if (textField.text.length == 0 && [string integerValue] > 2) {
+            textField.text = [NSString stringWithFormat:@"0%@", string];
+            [self expirationMonthTextFieldValueChanged];
             return NO;
         }
         
-        if ([string isEqualToString:@"/"]) {
-            if (textField.text.length == 1) {
-                textField.text = [@"0" stringByAppendingFormat:@"%@/", textField.text];
-                return NO;
-            } else {
-                
-            }
-        } else if (textField.text.length == 1 && ![string isEqualToString:@""]) {
-            textField.text = [textField.text stringByAppendingFormat:@"%@/", string];
+    } else if (self.activeTextField == self.yearExpirationTextField) {
+        if (textField.text.length == 2 && ![string isEqualToString:@""]) {
             return NO;
         }
     } else if (self.activeTextField == self.cvcTextField) {
@@ -707,19 +742,29 @@ The following expression can be used to validate against all card types, regardl
 }
 
 
-- (void)expirationTextFieldValueChanged {
+- (void)expirationYearTextFieldValueChanged {
     if (_fieldInvalid)
         [self resetFieldState];
     
-    if (self.expirationTextField.text.length == 5) {
-        NSArray *expirationParts = [self.expirationTextField.text componentsSeparatedByString:self.monthYearSeparator];
-        _cardMonth = expirationParts[0];
-        _cardYear = expirationParts[1];
-        if ([self isValidExpiration]) {
+    if (self.yearExpirationTextField.text.length > 1) {
+        _cardYear = self.yearExpirationTextField.text;
+        if ([self isValidYearExpiration]) {
             [self next:self];
         }
     }
 
+}
+
+- (void)expirationMonthTextFieldValueChanged {
+    if (_fieldInvalid)
+        [self resetFieldState];
+    
+    _cardMonth = self.monthExpirationTextField.text;
+    if (self.monthExpirationTextField.text.length > 1) {
+        if ([self isValidMonthExpiration]) {
+            [self next:self];
+        }
+    }
 }
 
 - (void)cvcTextFieldValueChanged {
@@ -750,7 +795,6 @@ The following expression can be used to validate against all card types, regardl
     
     self.trimmedNumber = [self.cardNumberTextField.text stringByReplacingOccurrencesOfString:@" " withString:@""];
     _cardNumber = self.trimmedNumber;
-    NSLog(@"trimmed NUmber %@", self.trimmedNumber);
     
     if (self.trimmedNumber.length > 3) {
         self.lastFourLabel.text = [self.cardNumber substringFromIndex: [self.trimmedNumber length] - 4];
@@ -804,13 +848,22 @@ The following expression can be used to validate against all card types, regardl
                 [self scrollToPage:1];
             }
             break;
-        case OKPaymentStepExpiration:
-            [self.expirationTextField becomeFirstResponder];
+        case OKPaymentStepExpirationMonth:
+            [self.monthExpirationTextField becomeFirstResponder];
             if (self.nameFieldType == OKNameFieldNone || self.nameFieldType == OKNameFieldLast) {
                 [self scrollToPage:1];
             } else {
                 [self scrollToPage:2];
             }
+            break;
+        case OKPaymentStepExpirationYear:
+            [self.yearExpirationTextField becomeFirstResponder];
+            if (self.nameFieldType == OKNameFieldNone || self.nameFieldType == OKNameFieldLast) {
+                [self scrollToPage:1];
+            } else {
+                [self scrollToPage:2];
+            }
+
             break;
         case OKPaymentStepSecurityCode:
             [self.cvcTextField becomeFirstResponder];
@@ -841,10 +894,16 @@ The following expression can be used to validate against all card types, regardl
         return NO;
     } 
     
-    if (![self isValidExpiration]) {
-        *invalidStep = OKPaymentStepExpiration;
+    if (![self isValidMonthExpiration]) {
+        *invalidStep = OKPaymentStepExpirationMonth;
         return NO;
     }
+    
+    if (![self isValidYearExpiration]) {
+        *invalidStep = OKPaymentStepExpirationYear;
+        return NO;
+    }
+
     
     if (![self isValidCvc]) {
         *invalidStep = OKPaymentStepSecurityCode;
@@ -865,9 +924,7 @@ The following expression can be used to validate against all card types, regardl
 }
 
 - (BOOL)isValidCardNumber {
-    NSLog(@"is valid card number");
     if (self.cardType == OKCardTypeUnknown) {
-        NSLog(@"unkown card");
         return NO;
     } else if ( self.cardType == OKCardTypeVisa) {
         if (self.trimmedNumber.length == 16 && ![self.trimmedNumber luhnCheck]) {
@@ -889,17 +946,20 @@ The following expression can be used to validate against all card types, regardl
         }
     }
     
-    NSLog(@"card number is valid");
-
-    
     _cardNumber = self.trimmedNumber;
     self.lastFour = [self.cardNumber substringFromIndex: [self.cardNumber length] - 4];
     return YES;
 }
 
-- (BOOL)isValidExpiration {
+-(BOOL)isValidMonthExpiration {
+    if ([self.cardMonth integerValue] < 13 && [self.cardMonth integerValue] > 0 ) {
+        return YES;
+    }
+    return NO;
+}
 
-    if (self.expirationTextField.text.length == 5 && [self.cardMonth integerValue] < 13 && [self.cardMonth integerValue] > 0 && [self.cardYear integerValue] >= self.minYear && [self.cardYear integerValue] <= self.maxYear) {
+- (BOOL)isValidYearExpiration {
+    if ([self.cardYear integerValue] >= self.minYear && [self.cardYear integerValue] <= self.maxYear) {
         return YES;
     }
     return NO;
@@ -1019,6 +1079,11 @@ The following expression can be used to validate against all card types, regardl
     self.activeTextField.textColor = self.defaultFontColor;
     _fieldInvalid = NO;
     
+}
+
+#pragma mark - OKDeletableTextFieldDelegate methods
+- (void)textFieldDidDelete:(OKDeletableTextField *)textField {
+    [self previous:self];
 }
 
 @end

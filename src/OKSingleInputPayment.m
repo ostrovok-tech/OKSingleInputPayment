@@ -174,27 +174,7 @@ The following expression can be used to validate against all card types, regardl
     [self.scrollContainer addSubview:self.cardNumberTextField];
     
     
-    //[self addSubview:self.cardNumberTextField];
-    [self addSubview:self.leftCardView];
-    
-    maximumWidthSpace = self.frame.size.width - ((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + (padding * numberOfFields));
-    widthPerField = maximumWidthSpace / numberOfFields;
-    
-    // Last four label
-    [@"12345" sizeWithFont:self.defaultFont minFontSize:self.cardNumberTextField.minimumFontSize actualFontSize:&maximumFontForFields forWidth:widthPerField lineBreakMode:NSLineBreakByClipping];
-    //self.lastFourLabel = [[UILabel alloc] initWithFrame:CGRectMake((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
-    self.lastFourLabel = [[UILabel alloc] initWithFrame:CGRectMake((self.cardNumberTextField.frame.origin.x + self.cardNumberTextField.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
-    //self.lastFourLabel.backgroundColor = [UIColor greenColor];
-    self.lastFourLabel.backgroundColor = [UIColor clearColor];
-    self.lastFourLabel.adjustsFontSizeToFitWidth = YES;
-    UITapGestureRecognizer *tg = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(previous:)];
-    [self.lastFourLabel addGestureRecognizer:tg];
-    self.lastFourLabel.userInteractionEnabled = YES;
-    //[self addSubview:self.lastFourLabel];
-    [self.scrollContainer addSubview:self.lastFourLabel];
-    
-    
-    float expFieldsWidth = widthPerField / 2;
+    float expFieldsWidth = (widthPerField / 2) - padding;
     self.monthExpirationTextField = [[OKDeletableTextField alloc] initWithFrame:CGRectMake((self.lastFourLabel.frame.origin.x + self.lastFourLabel.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, expFieldsWidth, self.cardNumberTextField.frame.size.height)];
     self.monthExpirationTextField.okTextFieldDelegate = self;
     self.monthExpirationTextField.backgroundColor = [UIColor clearColor];
@@ -203,16 +183,18 @@ The following expression can be used to validate against all card types, regardl
     self.monthExpirationTextField.inputAccessoryView = self.accessoryToolBar;
     self.monthExpirationTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     self.monthExpirationTextField.keyboardType = UIKeyboardTypeNumberPad;
+    //self.monthExpirationTextField.backgroundColor = [UIColor greenColor];
     [self.monthExpirationTextField addTarget:self action:@selector(expirationMonthTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
-
-    self.expirationSeparator = [[UILabel alloc] initWithFrame:CGRectMake((self.monthExpirationTextField.frame.origin.x + self.monthExpirationTextField.frame.size.width) - 8, self.cardNumberTextField.frame.origin.y, 4, self.cardNumberTextField.frame.size.height)];
-    self.expirationSeparator.text = @"/";
-    self.expirationSeparator.backgroundColor = [UIColor clearColor];
-    //self.expirationSeparator.text si
-    self.expirationSeparator.textAlignment = NSTextAlignmentCenter;
-    //[self.expirationSeparator sizeToFit];
     
-    self.yearExpirationTextField = [[OKDeletableTextField alloc] initWithFrame:CGRectMake((self.monthExpirationTextField.frame.origin.x + self.monthExpirationTextField.frame.size.width), self.cardNumberTextField.frame.origin.y, expFieldsWidth, self.cardNumberTextField.frame.size.height)];
+    self.expirationSeparator = [[UILabel alloc] initWithFrame:CGRectMake((self.monthExpirationTextField.frame.origin.x + self.monthExpirationTextField.frame.size.width) + 2, self.cardNumberTextField.frame.origin.y, 4, self.cardNumberTextField.frame.size.height)];
+    self.expirationSeparator.text = @"/";
+    //self.expirationSeparator.backgroundColor = [UIColor greenColor];
+    [self.expirationSeparator setFrame:CGRectMake(self.expirationSeparator.frame.origin.x + 2, self.expirationSeparator.frame.origin.y, self.expirationSeparator.frame.size.width, self.cardNumberTextField.frame.size.height)];
+    
+    self.expirationSeparator.backgroundColor = [UIColor clearColor];
+    self.expirationSeparator.textAlignment = NSTextAlignmentLeft;
+    
+    self.yearExpirationTextField = [[OKDeletableTextField alloc] initWithFrame:CGRectMake((self.expirationSeparator.frame.origin.x + self.expirationSeparator.frame.size.width) + 2, self.cardNumberTextField.frame.origin.y, expFieldsWidth, self.cardNumberTextField.frame.size.height)];
     self.yearExpirationTextField.okTextFieldDelegate = self;
     self.yearExpirationTextField.backgroundColor = [UIColor clearColor];
     self.yearExpirationTextField.adjustsFontSizeToFitWidth = YES;
@@ -220,25 +202,14 @@ The following expression can be used to validate against all card types, regardl
     self.yearExpirationTextField.inputAccessoryView = self.accessoryToolBar;
     self.yearExpirationTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     self.yearExpirationTextField.keyboardType = UIKeyboardTypeNumberPad;
+    //self.yearExpirationTextField.backgroundColor = [UIColor yellowColor];
     [self.yearExpirationTextField addTarget:self action:@selector(expirationYearTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
     
-//    self.expirationTextField = [[UITextField alloc] initWithFrame:CGRectMake((self.lastFourLabel.frame.origin.x + self.lastFourLabel.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
-//    //self.expirationTextField.backgroundColor = [UIColor greenColor];
-//    self.expirationTextField.backgroundColor = [UIColor clearColor];
-//    self.expirationTextField.adjustsFontSizeToFitWidth = YES;
-//    self.expirationTextField.delegate = self;
-//    self.expirationTextField.inputAccessoryView = self.accessoryToolBar;
-//    self.expirationTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-//    self.expirationTextField.keyboardType = UIKeyboardTypeNumberPad;
-//    [self.expirationTextField addTarget:self action:@selector(expirationTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
     
     [self.scrollContainer addSubview:self.monthExpirationTextField];
     [self.scrollContainer addSubview:self.yearExpirationTextField];
     [self.scrollContainer addSubview:self.expirationSeparator];
-
-
-    //[self addSubview:self.expirationTextField];
-    
+        
     
     self.cvcTextField = [[OKDeletableTextField alloc] initWithFrame:CGRectMake(self.yearExpirationTextField.frame.origin.x + self.yearExpirationTextField.frame.size.width + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
     self.cvcTextField.okTextFieldDelegate = self;
@@ -251,7 +222,6 @@ The following expression can be used to validate against all card types, regardl
     self.cvcTextField.keyboardType = UIKeyboardTypeNumberPad;
     [self.cvcTextField addTarget:self action:@selector(cvcTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
     
-    //[self addSubview:self.cvcTextField];
     [self.scrollContainer addSubview:self.cvcTextField];
     
     self.zipTextField = [[OKDeletableTextField alloc] initWithFrame:CGRectMake(self.cvcTextField.frame.origin.x + self.cvcTextField.frame.size.width + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
@@ -280,7 +250,6 @@ The following expression can be used to validate against all card types, regardl
     self.nameTextField.inputAccessoryView = self.accessoryToolBar;
     [self.nameTextField addTarget:self action:@selector(nameTextFieldValueChanged) forControlEvents:UIControlEventEditingChanged];
     [self.scrollContainer addSubview:self.nameTextField];
-    //[self addSubview:self.nameTextField];
     
     
     [self updateDefaultFonts];
@@ -448,8 +417,16 @@ The following expression can be used to validate against all card types, regardl
     CGFloat newFieldFontSize = (maximumFontForFields > self.defaultFont.pointSize) ? self.defaultFont.pointSize : maximumFontForFields;
     
     self.nameTextField.font = self.cardNumberTextField.font = [self fontWithNewSize:self.defaultFont newSize:newCardFontSize];
-    self.lastFourLabel.font = self.monthExpirationTextField.font = self.yearExpirationTextField.font  = self.expirationSeparator.font = self.cvcTextField.font = self.zipTextField.font = [self fontWithNewSize:self.defaultFont newSize:newFieldFontSize];
+    self.lastFourLabel.font = self.monthExpirationTextField.font = self.yearExpirationTextField.font = self.cvcTextField.font = self.zipTextField.font = [self fontWithNewSize:self.defaultFont newSize:newFieldFontSize];
+    
+    CGSize monthExpirationSize = [self.monthPlaceholder sizeWithFont:self.monthExpirationTextField.font];
+    CGSize yearExpirationSize = [self.monthPlaceholder sizeWithFont:self.yearExpirationTextField.font];
+    CGSize separatorSize = [@"/" sizeWithFont:self.expirationSeparator.font];
+    [self.monthExpirationTextField setFrame:CGRectMake(self.monthExpirationTextField.frame.origin.x, self.monthExpirationTextField.frame.origin.y, monthExpirationSize.width, self.monthExpirationTextField.frame.size.height)];
+    [self.expirationSeparator setFrame:CGRectMake((self.monthExpirationTextField.frame.origin.x + self.monthExpirationTextField.frame.size.width) - 2, self.monthExpirationTextField.frame.origin.y, separatorSize.width + 3, self.expirationSeparator.frame.size.height)];
+    [self.yearExpirationTextField setFrame:CGRectMake((self.expirationSeparator.frame.origin.x + self.expirationSeparator.frame.size.width), self.expirationSeparator.frame.origin.y, yearExpirationSize.width, self.expirationSeparator.frame.size.height)];
 }
+
 
 - (UIFont *)fontWithNewSize:(UIFont *)font newSize:(CGFloat)pointSize {
     NSString *fontName = font.fontName;
@@ -458,7 +435,7 @@ The following expression can be used to validate against all card types, regardl
 }
 
 - (void)updateFontColors {
-    self.nameTextField.textColor = self.cardNumberTextField.textColor = self.lastFourLabel.textColor = self.monthExpirationTextField.textColor = self.yearExpirationTextField.textColor = self.cvcTextField.textColor = self.zipTextField.textColor = self.defaultFontColor;
+    self.nameTextField.textColor = self.cardNumberTextField.textColor = self.lastFourLabel.textColor = self.monthExpirationTextField.textColor = self.expirationSeparator.textColor = self.yearExpirationTextField.textColor = self.cvcTextField.textColor = self.zipTextField.textColor = self.defaultFontColor;
 }
 
 - (void)updatePlaceholders {

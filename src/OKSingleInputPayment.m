@@ -189,6 +189,7 @@ The following expression can be used to validate against all card types, regardl
     UITapGestureRecognizer *tg = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(previous:)];
     [self.lastFourLabel addGestureRecognizer:tg];
     self.lastFourLabel.userInteractionEnabled = YES;
+    //self.lastFourLabel.backgroundColor = [UIColor yellowColor];
     [self.scrollContainer addSubview:self.lastFourLabel];
     
     float expFieldsWidth = (widthPerField / 2) - padding;
@@ -228,7 +229,7 @@ The following expression can be used to validate against all card types, regardl
     [self.scrollContainer addSubview:self.expirationSeparator];
         
     
-    self.cvcTextField = [[OKDeletableTextField alloc] initWithFrame:CGRectMake(self.yearExpirationTextField.frame.origin.x + self.yearExpirationTextField.frame.size.width + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
+    self.cvcTextField = [[OKDeletableTextField alloc] initWithFrame:CGRectMake((widthPerField + self.monthExpirationTextField.frame.origin.x) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
     self.cvcTextField.okTextFieldDelegate = self;
     //self.cvcTextField.backgroundColor = [UIColor greenColor];
     self.cvcTextField.backgroundColor = [UIColor clearColor];
@@ -530,7 +531,6 @@ The following expression can be used to validate against all card types, regardl
         [self.cvcTextField becomeFirstResponder];
     } else if (self.activeTextField == self.nameTextField) {
         if (self.nameFieldType == OKNameFieldLast) {
-            //[self setupBackSide];
             if (self.includeZipCode) {
                 [self.zipTextField becomeFirstResponder];
             } else {
@@ -640,13 +640,7 @@ The following expression can be used to validate against all card types, regardl
     if ([string isEqualToString:@" "] && textField != self.nameTextField)
         return NO;
     
-    // User is hitting the delete button on the last character of the field
-    if (textField.text.length == 0 && [string isEqualToString:@""]) {
-        textField.text = nil;
-        [self previous:self];
-        return NO;
-    }
-    
+        
     if (self.activeTextField == self.cardNumberTextField) {
         //if (textField.text.length == 0) {
             NSString *resultString = [textField.text stringByReplacingCharactersInRange:range withString:string];
@@ -740,8 +734,8 @@ The following expression can be used to validate against all card types, regardl
     if (_fieldInvalid)
         [self resetFieldState];
     
+    _cardYear = self.yearExpirationTextField.text;
     if (self.yearExpirationTextField.text.length > 1) {
-        _cardYear = self.yearExpirationTextField.text;
         if ([self isValidYearExpiration]) {
             [self next:self];
         }
@@ -797,18 +791,18 @@ The following expression can be used to validate against all card types, regardl
 
     
     if (self.cardType == OKCArdTypeMastercard) {
-        if (self.trimmedNumber.length == 16 && [self isValidCardNumber]) {
+        if (self.trimmedNumber.length == 16) {
             [self next:self];
         }
     } else if (self.cardType == OKCardTypeVisa) {
-        if ((self.trimmedNumber.length > 12 && self.trimmedNumber.length < 20) && [self isValidCardNumber]) {
+        if ((self.trimmedNumber.length > 12 && self.trimmedNumber.length < 20)) {
             [self next:self];
         }
     } else if (self.cardType == OKCardTypeAmericanExpress) {
-        if (self.trimmedNumber.length == 15 && [self isValidCardNumber])
+        if (self.trimmedNumber.length == 15)
             [self next:self];
     } else if (self.cardType == OKCardTypeDiscover) {
-        if (self.trimmedNumber.length == 16 && [self isValidCardNumber])
+        if (self.trimmedNumber.length == 16)
             [self next:self];
     } else if (self.cardNumberTextField.text.length > 2 && [self isValidCardNumber]) {
         [self next:self];

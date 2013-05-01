@@ -607,7 +607,12 @@ The following expression can be used to validate against all card types, regardl
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
-    [self next:self];
+    if (self.paymentStep == OKPaymentStepName) {
+        [self done:self];
+    } else {
+        [self next:self];
+    }
+
     return NO;
 }
 

@@ -189,6 +189,9 @@ The following expression can be used to validate against all card types, regardl
     UITapGestureRecognizer *tg = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(previous:)];
     [self.lastFourLabel addGestureRecognizer:tg];
     self.lastFourLabel.userInteractionEnabled = YES;
+    CGSize latFourLabelSize = [@"1234" sizeWithFont:self.lastFourLabel.font];
+    float rightPadding = widthPerField - latFourLabelSize.width;
+    NSLog(@"right padding is %f", rightPadding);
     //self.lastFourLabel.backgroundColor = [UIColor yellowColor];
     [self.scrollContainer addSubview:self.lastFourLabel];
     
@@ -229,7 +232,7 @@ The following expression can be used to validate against all card types, regardl
     [self.scrollContainer addSubview:self.expirationSeparator];
         
     
-    self.cvcTextField = [[OKDeletableTextField alloc] initWithFrame:CGRectMake((widthPerField + self.monthExpirationTextField.frame.origin.x) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
+    self.cvcTextField = [[OKDeletableTextField alloc] initWithFrame:CGRectMake((widthPerField + self.monthExpirationTextField.frame.origin.x) + padding + rightPadding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
     self.cvcTextField.okTextFieldDelegate = self;
     //self.cvcTextField.backgroundColor = [UIColor greenColor];
     self.cvcTextField.backgroundColor = [UIColor clearColor];
@@ -279,11 +282,15 @@ The following expression can be used to validate against all card types, regardl
     widthPerField = maximumWidthSpace / numberOfFields;
     [@"12345" sizeWithFont:self.defaultFont minFontSize:self.cardNumberTextField.minimumFontSize actualFontSize:&maximumFontForFields forWidth:widthPerField lineBreakMode:NSLineBreakByClipping];
     
+    CGSize latFourLabelSize = [@"1234" sizeWithFont:self.defaultFont];
+    float rightPadding = widthPerField - latFourLabelSize.width;
+    //NSLog(@"right padding is %f", rightPadding);
+    
     [self.lastFourLabel setFrame:CGRectMake((self.leftCardView.frame.origin.x + self.leftCardView.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
     [self.monthExpirationTextField setFrame:CGRectMake((self.lastFourLabel.frame.origin.x + self.lastFourLabel.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
     [self.yearExpirationTextField setFrame:CGRectMake((self.lastFourLabel.frame.origin.x + self.lastFourLabel.frame.size.width) + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
 
-    [self.cvcTextField setFrame:CGRectMake(self.yearExpirationTextField.frame.origin.x + self.yearExpirationTextField.frame.size.width + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
+    [self.cvcTextField setFrame:CGRectMake((widthPerField + self.monthExpirationTextField.frame.origin.x) + padding + rightPadding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
     if (self.includeZipCode)
         [self.zipTextField setFrame:CGRectMake(self.cvcTextField.frame.origin.x + self.cvcTextField.frame.size.width + padding, self.cardNumberTextField.frame.origin.y, widthPerField, self.cardNumberTextField.frame.size.height)];
 }
@@ -795,7 +802,8 @@ The following expression can be used to validate against all card types, regardl
             [self next:self];
         }
     } else if (self.cardType == OKCardTypeVisa) {
-        if ((self.trimmedNumber.length > 12 && self.trimmedNumber.length < 20)) {
+        //if ((self.trimmedNumber.length > 12 && self.trimmedNumber.length < 20)) {
+        if (self.trimmedNumber.length == 16) {
             [self next:self];
         }
     } else if (self.cardType == OKCardTypeAmericanExpress) {

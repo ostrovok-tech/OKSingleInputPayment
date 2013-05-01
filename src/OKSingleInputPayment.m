@@ -429,7 +429,6 @@ The following expression can be used to validate against all card types, regardl
     return [NSString stringWithFormat:@"%@%@%@", self.cardMonth, self.monthYearSeparator, self.cardYear];
 }
 
-
 - (void)setCardName:(NSString *)cardName {
     self.nameTextField.text = cardName;
     _cardName = cardName;
@@ -608,15 +607,17 @@ The following expression can be used to validate against all card types, regardl
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     if (self.paymentStep == OKPaymentStepName) {
-        [self done:self];
+        if ([self.delegate respondsToSelector:@selector(nameFieldDidEndEditing)]){
+            [self.delegate nameFieldDidEndEditing];
+        }
     } else {
         [self next:self];
     }
-
+    
     return NO;
 }
 
-// A much smarter card number formatter repurposed from stripe/PaymentKit  
+// A much smarter card number formatter repurposed from stripe/PaymentKit
 - (NSString *)formattedCardNumber:(NSString *)number type:(OKCardType)type {
     NSRegularExpression *regex;
     

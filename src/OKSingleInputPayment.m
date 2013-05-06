@@ -742,18 +742,17 @@ The following expression can be used to validate against all card types, regardl
     return YES;
 }
 
-
+#pragma mark - Editing changed callbacks
 - (void)expirationYearTextFieldValueChanged {
     if (_fieldInvalid)
         [self resetFieldState];
     
     _cardYear = self.yearExpirationTextField.text;
     if (self.yearExpirationTextField.text.length > 1) {
-        if ([self isValidYearExpiration]) {
+        if ([self isValidYearExpiration] && self.paymentStep == OKPaymentStepExpirationYear) {
             [self next:self];
         }
     }
-
 }
 
 - (void)expirationMonthTextFieldValueChanged {
@@ -762,7 +761,7 @@ The following expression can be used to validate against all card types, regardl
     
     _cardMonth = self.monthExpirationTextField.text;
     if (self.monthExpirationTextField.text.length > 1) {
-        if ([self isValidMonthExpiration]) {
+        if ([self isValidMonthExpiration] && self.paymentStep == OKPaymentStepExpirationMonth) {
             [self next:self];
         }
     }
@@ -773,7 +772,7 @@ The following expression can be used to validate against all card types, regardl
         [self resetFieldState];
     
     _cardCvc = self.cvcTextField.text;
-    if (self.cvcTextField.text.length > 2) {
+    if (self.cvcTextField.text.length > 2 && self.paymentStep == OKPaymentStepSecurityCode) {
         [self next:self];
     }
 }
@@ -784,7 +783,7 @@ The following expression can be used to validate against all card types, regardl
     
     if (self.zipTextField.text.length > 4) {
         _cardZip = self.zipTextField.text;
-        if ([self isValidZip]) {
+        if ([self isValidZip] && self.paymentStep == OKPaymentStepZip) {
             [self next:self];
         }
     }
@@ -801,7 +800,9 @@ The following expression can be used to validate against all card types, regardl
         self.lastFourLabel.text = [self.cardNumber substringFromIndex: [self.trimmedNumber length] - 4];
     }
     
-
+    if(self.paymentStep != OKPaymentStepCCNumber)
+        return;
+    
     
     if (self.cardType == OKCArdTypeMastercard) {
         if (self.trimmedNumber.length == 16) {
@@ -821,9 +822,6 @@ The following expression can be used to validate against all card types, regardl
     } else if (self.cardNumberTextField.text.length > 2 && [self isValidCardNumber]) {
         [self next:self];
     }
-    
-
-    
 }
 
 - (void)nameTextFieldValueChanged {

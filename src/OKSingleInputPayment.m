@@ -264,7 +264,7 @@ The following expression can be used to validate against all card types, regardl
     self.nameTextField.font = [self fontWithNewSize:self.defaultFont newSize:maximumFontForCardNumber];
     self.nameTextField.delegate = self;
     self.nameTextField.adjustsFontSizeToFitWidth = YES;
-    self.nameTextField.keyboardType = UIKeyboardTypeAlphabet;
+    self.nameTextField.keyboardType = UIKeyboardTypeASCIICapable;
     self.nameTextField.returnKeyType = UIReturnKeyNext;
     self.nameTextField.backgroundColor = [UIColor clearColor];
     self.nameTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;

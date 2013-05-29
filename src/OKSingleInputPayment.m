@@ -749,7 +749,7 @@ The following expression can be used to validate against all card types, regardl
     
     _cardYear = self.yearExpirationTextField.text;
     if (self.yearExpirationTextField.text.length > 1) {
-        if ([self isValidYearExpiration] && self.paymentStep == OKPaymentStepExpirationYear) {
+        if (self.paymentStep == OKPaymentStepExpirationYear) {
             [self next:self];
         }
     }

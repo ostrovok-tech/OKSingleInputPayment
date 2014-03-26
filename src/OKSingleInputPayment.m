@@ -446,9 +446,9 @@ The following expression can be used to validate against all card types, regardl
     CGSize monthExpirationSize = [self.monthPlaceholder sizeWithFont:self.monthExpirationTextField.font];
     CGSize yearExpirationSize = [self.monthPlaceholder sizeWithFont:self.yearExpirationTextField.font];
     CGSize separatorSize = [@"/" sizeWithFont:self.expirationSeparator.font];
-    [self.monthExpirationTextField setFrame:CGRectMake(self.monthExpirationTextField.frame.origin.x, self.monthExpirationTextField.frame.origin.y, monthExpirationSize.width, self.monthExpirationTextField.frame.size.height)];
-    [self.expirationSeparator setFrame:CGRectMake((self.monthExpirationTextField.frame.origin.x + self.monthExpirationTextField.frame.size.width) - 2, self.monthExpirationTextField.frame.origin.y, separatorSize.width + 3, self.expirationSeparator.frame.size.height)];
-    [self.yearExpirationTextField setFrame:CGRectMake((self.expirationSeparator.frame.origin.x + self.expirationSeparator.frame.size.width), self.expirationSeparator.frame.origin.y, yearExpirationSize.width, self.expirationSeparator.frame.size.height)];
+    [self.monthExpirationTextField setFrame:CGRectMake(self.monthExpirationTextField.frame.origin.x, self.monthExpirationTextField.frame.origin.y, monthExpirationSize.width + 3, self.monthExpirationTextField.frame.size.height)];
+    [self.expirationSeparator setFrame:CGRectMake((self.monthExpirationTextField.frame.origin.x + self.monthExpirationTextField.frame.size.width) - 4, self.monthExpirationTextField.frame.origin.y, separatorSize.width + 3, self.expirationSeparator.frame.size.height)];
+    [self.yearExpirationTextField setFrame:CGRectMake((self.expirationSeparator.frame.origin.x + self.expirationSeparator.frame.size.width), self.expirationSeparator.frame.origin.y, yearExpirationSize.width + 3, self.expirationSeparator.frame.size.height)];
 }
 
 
